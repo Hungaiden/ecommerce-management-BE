@@ -1,0 +1,82 @@
+import { Tour } from '../../models/tours/tour.model'
+
+interface TourData {
+  title: string
+  code: string
+  images: string
+  price: number
+  discount: number
+  information: string
+  schedule: string
+  time_start: Date
+  stock: number
+  status: 'active' | 'inactive' | 'pending'
+  position?: number
+}
+
+// Hàm tạo Tour
+export const createTour = async (data: TourData) => {
+  // Kiểm tra nếu code đã tồn tại
+  const existingTour = await Tour.findOne({ code: data.code })
+  if (existingTour) {
+    throw new Error('Tour code đã tồn tại!')
+  }
+
+  // Tạo tour mới
+  const newTour = new Tour(data)
+  await newTour.save()
+  return newTour
+}
+
+// Hàm lấy tất cả Tour
+export const getAllTours = async () => {
+  try {
+    const tours = await Tour.find({
+      deleted: false,
+    })
+    return tours
+  } catch (error) {
+    throw new Error('Lỗi khi lấy danh sách tour!')
+  }
+}
+
+// Hàm lấy Tour theo ID
+export const getTourByIdService = async (id: string) => {
+  try {
+    const tour = await Tour.findOne({
+      _id: id,
+      deleted: false,
+    })
+    return tour
+  } catch (error) {
+    throw new Error('Lỗi khi lấy thông tin tour!')
+  }
+}
+
+// Hàm cập nhật Tour
+export const updateTour = async (id: string, data: TourData) => {
+  try {
+    const updatedTour = await Tour.findOneAndUpdate(
+      { _id: id, deleted: false },
+      data,
+      { new: true },
+    )
+    return updatedTour
+  } catch (error) {
+    throw new Error('Lỗi khi cập nhật tour!')
+  }
+}
+
+// Hàm xóa Tour
+export const deleteTour = async (id: string) => { 
+  try {
+    const deletedTour = await Tour.findOneAndUpdate(
+      { _id: id, deleted: false },
+      { deleted: true, deleted_at: new Date() },
+      { new: true },
+    )
+    return deletedTour
+  } catch (error) {
+    throw new Error('Lỗi khi xóa tour!')
+  }
+}
