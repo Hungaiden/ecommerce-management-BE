@@ -1,18 +1,5 @@
 import { Tour } from '../../models/tours/tour.model'
-
-interface TourData {
-  title: string
-  code: string
-  images: string
-  price: number
-  discount: number
-  information: string
-  schedule: string
-  time_start: Date
-  stock: number
-  status: 'active' | 'inactive' | 'pending'
-  position?: number
-}
+import { TourData } from '../../dto/tour.dto'
 
 // Hàm tạo Tour
 export const createTour = async (data: TourData) => {
