@@ -1,8 +1,10 @@
 import { Tour } from '../../models/tours/tour.model'
 import { TourData } from '../../dto/tour.dto'
+import { CreateTourDto } from '../../dto/create.tour.dto'
+import { UpdateTourDto } from '../../dto/update.tour.dto'
 
 // Hàm tạo Tour
-export const createTour = async (data: TourData) => {
+export const createTour = async (data: CreateTourDto) => {
   // Kiểm tra nếu code đã tồn tại
   const existingTour = await Tour.findOne({ code: data.code })
   if (existingTour) {
@@ -41,7 +43,7 @@ export const getTourByIdService = async (id: string) => {
 }
 
 // Hàm cập nhật Tour
-export const updateTour = async (id: string, data: TourData) => {
+export const updateTour = async (id: string, data: UpdateTourDto) => {
   try {
     const updatedTour = await Tour.findOneAndUpdate(
       { _id: id, deleted: false },
