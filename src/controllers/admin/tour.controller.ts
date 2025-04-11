@@ -1,150 +1,75 @@
-import { Request, Response } from "express";
-import * as tourService from "../../services/admin/tour.service";
-import {
-    ResponseDetailSuccess,
-    ResponseListSuccess,
-    ResponseFailure,
-} from "../../utils/types/ResponseTypes";
-import { Tour } from "../../models/tours/tour.model";
+import { Request, Response } from 'express'
+import * as tourService from '../../services/admin/tour.service'
 
 export const createPost = async (req: Request, res: Response) => {
-    try {
-        const tour = await tourService.createTour(req.body);
-        const response = {
-            code: 201,
-            data: tour,
-        };
-        res.status(201).json(response);
-    } catch (error: any) {
-        const response: ResponseFailure = {
-            code: 400,
-            timestamp: new Date().toISOString(),
-            path: req.path,
-            message: error.message,
-            errors: [],
-        };
-        res.status(400).json(response);
-    }
-};
+  try {
+    const tour = await tourService.createTour(req.body)
+    res.status(201).json({
+      message: 'Thêm mớI tour thành công!',
+      tour: tour,
+    })
+  } catch (error: any) {
+    res.status(400).json({ error: error.message })
+  }
+}
 
 export const getAllTours = async (req: Request, res: Response) => {
-    try {
-        const result = await tourService.getAllTours();
-        const response: ResponseListSuccess<typeof result> = {
-            code: 200,
-            data: {
-                hits: result,
-                pagination: {
-                    totalRows: 11,
-                    totalPages: 2,
-                },
-            },
-        };
-        res.status(200).json(response);
-    } catch (error: any) {
-        const response: ResponseFailure = {
-            code: 500,
-            timestamp: new Date().toISOString(),
-            path: req.path,
-            message: "Lỗi khi lấy danh sách tour!",
-            errors: [],
-        };
-        res.status(500).json(response);
-    }
-};
+  try {
+    const tours = await tourService.getAllTours()
+    res.status(200).json({ 
+      message: 'Lấy danh sách tour thành công!',
+      tours: tours,
+    })
+  } catch (error: any) {
+    res.status(500).json({ error: error.message })
+  }
+}
 
 export const getTourById = async (req: Request, res: Response) => {
-    try {
-        const tour = await tourService.getTourByIdService(req.params.id);
-        if (!tour) {
-            const response: ResponseFailure = {
-                code: 404,
-                timestamp: new Date().toISOString(),
-                path: req.path,
-                message: "Không tìm thấy tour",
-                errors: [],
-            };
-            return res.status(404).json(response);
-        }
-
-        const response: ResponseDetailSuccess<typeof tour> = {
-            code: 200,
-            data: tour,
-        };
-        res.status(200).json(response);
-    } catch (error: any) {
-        const response: ResponseFailure = {
-            code: 500,
-            timestamp: new Date().toISOString(),
-            path: req.path,
-            message: "Lỗi khi lấy thông tin tour!",
-            errors: [],
-        };
-        res.status(500).json(response);
+  try {
+    const tourId = req.params.id
+    const tour = await tourService.getTourByIdService(tourId)
+    if (!tour) {
+      res.status(404).json({ message: 'Không tìm thấy tour' })
     }
-};
+    res.status(200).json({ 
+      message: 'Lấy thông tin tour thành công!',
+      tour: tour,
+    })
+  } catch (error: any) {
+    res.status(500).json({ error: error.message })
+  }
+}
 
-export const updateTour = async (req: Request, res: Response) => {
-    try {
-        const updatedTour = await tourService.updateTour(
-            req.params.id,
-            req.body
-        );
-        if (!updatedTour) {
-            const response: ResponseFailure = {
-                code: 404,
-                timestamp: new Date().toISOString(),
-                path: req.path,
-                message: "Không tìm thấy tour",
-                errors: [],
-            };
-            return res.status(404).json(response);
-        }
-
-        const response: ResponseDetailSuccess<typeof updatedTour> = {
-            code: 200,
-            data: updatedTour,
-        };
-        res.status(200).json(response);
-    } catch (error: any) {
-        const response: ResponseFailure = {
-            code: 500,
-            timestamp: new Date().toISOString(),
-            path: req.path,
-            message: "Lỗi khi cập nhật tour!",
-            errors: [],
-        };
-        res.status(500).json(response);
+export const updateTour = async (req: Request, res: Response) => {  
+  try {
+    const tourId = req.params.id
+    const updatedTour = await tourService.updateTour(tourId, req.body)
+    if (!updatedTour) {
+      res.status(404).json({ message: 'Không tìm thấy tour' })
     }
-};
+    res.status(200).json({ 
+      message: 'Cập nhật tour thành công!',
+      tour: updatedTour,
+    })
+  } catch (error: any) {
+    res.status(500).json({ error: error.message })
+  }
+}
 
 export const deleteTour = async (req: Request, res: Response) => {
-    try {
-        const deletedTour = await tourService.deleteTour(req.params.id);
-        if (!deletedTour) {
-            const response: ResponseFailure = {
-                code: 404,
-                timestamp: new Date().toISOString(),
-                path: req.path,
-                message: "Không tìm thấy tour",
-                errors: [],
-            };
-            return res.status(404).json(response);
-        }
-
-        const response: ResponseDetailSuccess<typeof deletedTour> = {
-            code: 200,
-            data: deletedTour,
-        };
-        res.status(200).json(response);
-    } catch (error: any) {
-        const response: ResponseFailure = {
-            code: 500,
-            timestamp: new Date().toISOString(),
-            path: req.path,
-            message: "Lỗi khi xóa tour!",
-            errors: [],
-        };
-        res.status(500).json(response);
+  try {
+    const tourId = req.params.id
+    const deletedTour = await tourService.deleteTour(tourId)
+    if (!deletedTour) {
+      res.status(404).json({ message: 'Không tìm thấy tour' })
     }
-};
+    res.status(200).json({ 
+      message: 'Xóa tour thành công!',
+      tour: deletedTour,
+    })
+  } catch (error: any) {
+    res.status(500).json({ error: error.message })
+  }
+}
+
