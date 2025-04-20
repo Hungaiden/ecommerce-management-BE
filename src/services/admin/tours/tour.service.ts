@@ -28,9 +28,9 @@ export const getAllTours = async (
   try {
     // Bộ lọc
     const query: any = { deleted: false };
-    if (filter.status) query.status = filter.status;
-    if (filter.minPrice) query.price = { $gte: filter.minPrice };
-    if (filter.maxPrice) query.price = { $lte: filter.maxPrice };
+    if (filter?.status) query.status = filter.status;
+    if (filter?.minPrice) query.price = { $gte: filter.minPrice };
+    if (filter?.maxPrice) query.price = { $lte: filter.maxPrice };
 
     // Tìm kiếm theo từ khóa
     if (searchParams?.keyword && searchParams?.field) {
