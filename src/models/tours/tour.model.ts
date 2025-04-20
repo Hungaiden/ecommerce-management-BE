@@ -52,15 +52,14 @@ const tourSchema = new mongoose.Schema(
 
 // tao slug truoc khi luu
 tourSchema.pre('save', function(next) {
-  const tour = this as any; // Ép kiểu `this` thành `any`
-  if (tour.isModified('title') && tour.title) {
-    tour.slug = tour.title
+  if (this.isModified('title')) {
+    this.slug = this.title
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, '-')
-      .replace(/(^-|-$)/g, '');
+      .replace(/(^-|-$)/g, '')
   }
-  next();
-});
+  next()
+})
 
 
 export const Tour = mongoose.model('Tour', tourSchema, 'tours')
