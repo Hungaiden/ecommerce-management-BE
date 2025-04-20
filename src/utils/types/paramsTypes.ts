@@ -12,6 +12,7 @@ export type TourFilterParams = {
   maxPrice?: number;
 };
 
+
 export enum SORT_TYPE {
   'DESC' = 'desc',
   'ASC' = 'asc', 
