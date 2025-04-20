@@ -1,5 +1,6 @@
 export interface ResponseListSuccess<T> {
   code: number;
+  message: string;
   data: {
       hits: T;
       pagination: {
@@ -11,6 +12,7 @@ export interface ResponseListSuccess<T> {
 
 export interface ResponseDetailSuccess<T> {
   code: number;
+  message: string;
   data: T;
 }
 

@@ -1,16 +1,17 @@
 import { Request, Response } from "express";
-import * as tourService from "../../services/admin/tour.service";
+import * as tourService from "../../../services/admin/tours/tour.service";
 import {
   ResponseDetailSuccess,
   ResponseListSuccess,
   ResponseFailure,
-} from "../../utils/types/ResponseTypes";
+} from "../../../utils/types/ResponseTypes";
 
 export const createPost = async (req: Request, res: Response) => {
   try {
     const tour = await tourService.createTour(req.body);
     const response: ResponseDetailSuccess<typeof tour> = {
       code: 201,
+      message: "Tạo tour thành công",
       data: tour,
     };
     res.status(201).json(response);
@@ -31,10 +32,11 @@ export const getAllTours = async (req: Request, res: Response) => {
     const result = await tourService.getAllTours();
     const response: ResponseListSuccess<typeof result> = {
       code: 200,
+      message: "Lấy danh sách tour thành công",
       data: {
         hits: result,
         pagination: {
-          totalRows: 11,
+          totalRows: 10,
           totalPages: 2,
         },
       },
@@ -68,6 +70,7 @@ export const getTourById = async (req: Request, res: Response) => {
 
     const response: ResponseDetailSuccess<typeof tour> = {
       code: 200,
+      message: "Lấy thông tin tour thành công",
       data: tour,
     };
     res.status(200).json(response);
@@ -99,6 +102,7 @@ export const updateTour = async (req: Request, res: Response) => {
 
     const response: ResponseDetailSuccess<typeof updatedTour> = {
       code: 200,
+      message: "Cập nhật tour thành công",
       data: updatedTour,
     };
     res.status(200).json(response);
@@ -114,9 +118,9 @@ export const updateTour = async (req: Request, res: Response) => {
   }
 };
 
-export const deleteTour = async (req: Request, res: Response) => {
+export const deleteOneTour = async (req: Request, res: Response) => {
   try {
-    const deletedTour = await tourService.deleteTour(req.params.id);
+    const deletedTour = await tourService.deleteOneTour(req.params.id);
     if (!deletedTour) {
       const response: ResponseFailure = {
         code: 404,
@@ -130,6 +134,7 @@ export const deleteTour = async (req: Request, res: Response) => {
 
     const response: ResponseDetailSuccess<typeof deletedTour> = {
       code: 200,
+      message: "Xóa tour thành công",
       data: deletedTour,
     };
     res.status(200).json(response);
