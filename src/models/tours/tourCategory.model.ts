@@ -44,4 +44,4 @@ categorySchema.pre('save', function(next) {
   next()
 })
 
-export const Category = mongoose.model('TourCategory', categorySchema, 'tour_categories')
+export const TourCategory = mongoose.model('TourCategory', categorySchema, 'tour_categories')
