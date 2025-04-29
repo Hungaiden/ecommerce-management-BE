@@ -3,7 +3,7 @@ import cloudinary from '../../config/cloudinary'
 import streamifier from 'streamifier'
 
 
-export const uploadImage = (fileBuffer: Buffer): Promise<string> => {
+export const uploadOneImage = (fileBuffer: Buffer): Promise<string> => {
   return new Promise((resolve, reject) => {
     const stream = cloudinary.uploader.upload_stream(
       (error, result) => {
@@ -19,5 +19,5 @@ export const uploadImage = (fileBuffer: Buffer): Promise<string> => {
 }
 
 export const uploadMultipleImages = (fileBuffers: Buffer[]): Promise<string[]> => {
-  return Promise.all(fileBuffers.map(fileBuffer => uploadImage(fileBuffer)))
+  return Promise.all(fileBuffers.map(fileBuffer => uploadOneImage(fileBuffer)))
 }

@@ -1,7 +1,11 @@
-import mongoose from 'mongoose'
-
-const hotelSchema = new mongoose.Schema(
-  {
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.Hotel = void 0;
+const mongoose_1 = __importDefault(require("mongoose"));
+const hotelSchema = new mongoose_1.default.Schema({
     slug: { type: String, required: true, unique: true },
     name: { type: String, required: true },
     description: { type: String, required: true },
@@ -17,17 +21,13 @@ const hotelSchema = new mongoose.Schema(
     lat: { type: Number, required: true },
     lon: { type: Number, required: true },
     status: {
-      type: String,
-      enum: ['Opened', 'Closed'],
-      default: 'Opened',
-      required: true,
+        type: String,
+        enum: ['Opened', 'Closed'],
+        default: 'Opened',
+        required: true,
     },
-    position: Number,
     total_rooms: { type: Number, required: true },
-  },
-  {
+}, {
     timestamps: true,
-  }
-)
-
-export const Hotel = mongoose.model('Hotel', hotelSchema, 'hotels')
+});
+exports.Hotel = mongoose_1.default.model('Hotel', hotelSchema, 'hotels');

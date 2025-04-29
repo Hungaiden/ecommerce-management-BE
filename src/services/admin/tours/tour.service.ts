@@ -50,7 +50,7 @@ export const getAllTours = async (
       sortQuery[sortParams.sortBy] =
         sortParams.sortType === paramsTypes.SORT_TYPE.ASC ? 1 : -1;
     }
-
+    
     // Truy vấn MongoDB
     const tours = await Tour.find(query)
       .skip(offset) // Bỏ qua số lượng bản ghi dựa trên offset

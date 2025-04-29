@@ -8,7 +8,7 @@ const tourSchema = new mongoose.Schema(
       required: true,
       unique: true,
     },
-    images: String,
+    images: [String],
     price: {
       type: Number,
       required: true,

@@ -12,6 +12,12 @@ export type TourFilterParams = {
   maxPrice?: number;
 };
 
+export type HotelFilterParams = {
+  status?: string;
+  minPrice?: number;
+  maxPrice?: number;
+};
+
 export enum SORT_TYPE {
   'DESC' = 'desc',
   'ASC' = 'asc', 

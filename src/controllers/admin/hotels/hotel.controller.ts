@@ -1,5 +1,6 @@
 import { Request, Response } from "express"
 import * as hotelService from '../../../services/admin/hotels/hotel.service'
+import * as paramsTypes from "../../../utils/types/paramsTypes";
 import {
   ResponseDetailSuccess,
   ResponseListSuccess,
@@ -28,30 +29,70 @@ export const createHotel = async (req: Request, res: Response) => {
 }
 
 export const getAllHotels = async (req: Request, res: Response) => {
-  try {
-    const result = await hotelService.getAllHotels()
-    const response: ResponseListSuccess<typeof result> = {
-      code: 200,
-      message: "Lấy danh sách khách sạn thành công",
-      data: {
-        hits: result,
-        pagination: {
-          totalRows: 10,
-          totalPages: 2, // có thể tính động nếu dùng paginate
+   try {
+      const filter: paramsTypes.HotelFilterParams = {
+        status: req.query.status as string,
+        minPrice: req.query.minPrice ? Number(req.query.minPrice) : undefined,
+        maxPrice: req.query.maxPrice ? Number(req.query.maxPrice) : undefined,
+      };
+  
+      const searchParams: paramsTypes.SearchParams = {
+        keyword: req.query.keyword as string,
+        field: req.query.field as string,
+      };
+  
+      const sortParams: paramsTypes.SortParams = {
+        sortBy: req.query.sortBy as string,
+        sortType: req.query.sortType as paramsTypes.SORT_TYPE,
+      };
+  
+      const paginateParams: paramsTypes.PaginateParams = {
+        offset: req.query.offset ? parseInt(req.query.offset as string) : 0,
+        limit: req.query.limit ? parseInt(req.query.limit as string) : 10,
+      };
+      const result = await hotelService.getAllHotels(
+        filter,
+        searchParams,
+        sortParams,
+        paginateParams
+      );
+      if (result.hotels.length === 0) {
+        const response: ResponseListSuccess<typeof result.hotels> = {
+          code: 200,
+          message: "Không tìm thấy hotel nào phù hợp",
+          data: {
+            hits: [],
+            pagination: {
+              totalRows: 0,
+              totalPages: 0,
+            },
+          },
+        };
+        res.status(200).json(response)
+        return 
+      }
+      const response: ResponseListSuccess<typeof result.hotels > = {
+        code: 200,
+        message: "Lấy danh sách hotel thành công",
+        data: {
+          hits: result.hotels,
+          pagination: {
+            totalRows: result.totalRows,
+            totalPages: result.totalPages,
+          },
         },
-      },
+      };
+      res.status(200).json(response);
+    } catch (error: any) {
+      const response: ResponseFailure = {
+        code: 500,
+        timestamp: new Date().toISOString(),
+        path: req.path,
+        message: "Lỗi khi lấy danh sách hotel!",
+        errors: [],
+      };
+      res.status(500).json(response);
     }
-    res.status(200).json(response)
-  } catch (error: any) {
-    const response: ResponseFailure = {
-      code: 500,
-      timestamp: new Date().toISOString(),
-      path: req.path,
-      message: "Lỗi khi lấy danh sách khách sạn!",
-      errors: [],
-    }
-    res.status(500).json(response)
-  }
 }
 
 export const getHotelById = async (req: Request, res: Response) => {
