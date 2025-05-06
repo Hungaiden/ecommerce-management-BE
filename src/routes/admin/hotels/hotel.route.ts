@@ -24,6 +24,6 @@ router.patch(
   hotelController.updateHotel
 );
 
-router.delete("/delete/:id", hotelController.deleteHotel);
+router.delete("/deleteOne/:id", hotelController.deleteHotel);
 
 export const hotelsRoute: Router = router;
