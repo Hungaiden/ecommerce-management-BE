@@ -1,5 +1,5 @@
 import type { Request, Response } from 'express'
-import * as accountService from '../../../services/admin/accounts/account.service'
+import * as tourCategoryService from '../../../services/admin/tours/tourCategory.service'
 import type * as paramsTypes from '../../../utils/types/paramsTypes'
 import type {
   ResponseDetailSuccess,
@@ -7,13 +7,13 @@ import type {
   ResponseFailure,
 } from '../../../utils/types/ResponseTypes'
 
-export const createAccount = async (req: Request, res: Response) => {
+export const createCategory = async (req: Request, res: Response) => {
   try {
-    const account = await accountService.createAccount(req.body)
-    const response: ResponseDetailSuccess<typeof account> = {
+    const category = await tourCategoryService.createTourCategory(req.body)
+    const response: ResponseDetailSuccess<typeof category> = {
       code: 201,
-      message: 'Tạo tài khoản thành công',
-      data: account,
+      message: 'Tạo category thành công',
+      data: category,
     }
     res.status(201).json(response)
   } catch (error: any) {
@@ -28,7 +28,7 @@ export const createAccount = async (req: Request, res: Response) => {
   }
 }
 
-export const getAllAccounts = async (req: Request, res: Response) => {
+export const getAllCategories = async (req: Request, res: Response) => {
   try {
     const searchParams: paramsTypes.SearchParams = {
       keyword: req.query.keyword as string,
@@ -45,33 +45,17 @@ export const getAllAccounts = async (req: Request, res: Response) => {
       limit: req.query.limit ? parseInt(req.query.limit as string) : 10,
     }
 
-    const result = await accountService.getAllAccounts(
+    const result = await tourCategoryService.getAllTourCategories(
       searchParams,
       sortParams,
       paginateParams,
     )
 
-    if (result.accounts.length === 0) {
-      const response: ResponseListSuccess<typeof result.accounts> = {
-        code: 200,
-        message: 'Không tìm thấy tài khoản nào',
-        data: {
-          hits: [],
-          pagination: {
-            totalRows: 0,
-            totalPages: 0,
-          },
-        },
-      }
-      res.status(200).json(response)
-      return
-    }
-
-    const response: ResponseListSuccess<typeof result.accounts> = {
+    const response: ResponseListSuccess<typeof result.categories> = {
       code: 200,
-      message: 'Lấy danh sách tài khoản thành công',
+      message: 'Lấy danh sách category thành công',
       data: {
-        hits: result.accounts,
+        hits: result.categories,
         pagination: {
           totalRows: result.totalRows,
           totalPages: result.totalPages,
@@ -84,32 +68,33 @@ export const getAllAccounts = async (req: Request, res: Response) => {
       code: 500,
       timestamp: new Date().toISOString(),
       path: req.path,
-      message: 'Lỗi khi lấy danh sách tài khoản!',
+      message: error.message,
       errors: [],
     }
     res.status(500).json(response)
   }
 }
 
-export const getAccountById = async (req: Request, res: Response) => {
+export const getCategoryById = async (req: Request, res: Response) => {
   try {
-    const account = await accountService.getAccountById(req.params.id)
-    if (!account) {
+    const category = await tourCategoryService.getTourCategoryById(
+      req.params.id,
+    )
+    if (!category) {
       const response: ResponseFailure = {
         code: 404,
         timestamp: new Date().toISOString(),
         path: req.path,
-        message: 'Không tìm thấy tài khoản',
+        message: 'Không tìm thấy category',
         errors: [],
       }
       res.status(404).json(response)
-      return
     }
 
-    const response: ResponseDetailSuccess<typeof account> = {
+    const response: ResponseDetailSuccess<typeof category> = {
       code: 200,
-      message: 'Lấy thông tin tài khoản thành công',
-      data: account,
+      message: 'Lấy thông tin category thành công',
+      data: category,
     }
     res.status(200).json(response)
   } catch (error: any) {
@@ -117,35 +102,34 @@ export const getAccountById = async (req: Request, res: Response) => {
       code: 500,
       timestamp: new Date().toISOString(),
       path: req.path,
-      message: 'Lỗi khi lấy thông tin tài khoản!',
+      message: error.message,
       errors: [],
     }
     res.status(500).json(response)
   }
 }
 
-export const updateAccount = async (req: Request, res: Response) => {
+export const updateCategory = async (req: Request, res: Response) => {
   try {
-    const updatedAccount = await accountService.updateAccount(
+    const updatedCategory = await tourCategoryService.updateTourCategory(
       req.params.id,
       req.body,
     )
-    if (!updatedAccount) {
+    if (!updatedCategory) {
       const response: ResponseFailure = {
         code: 404,
         timestamp: new Date().toISOString(),
         path: req.path,
-        message: 'Không tìm thấy tài khoản',
+        message: 'Không tìm thấy category',
         errors: [],
       }
       res.status(404).json(response)
-      return
     }
 
-    const response: ResponseDetailSuccess<typeof updatedAccount> = {
-      code: 200, 
-      message: 'Cập nhật tài khoản thành công',
-      data: updatedAccount,
+    const response: ResponseDetailSuccess<typeof updatedCategory> = {
+      code: 200,
+      message: 'Cập nhật category thành công',
+      data: updatedCategory,
     }
     res.status(200).json(response)
   } catch (error: any) {
@@ -153,32 +137,33 @@ export const updateAccount = async (req: Request, res: Response) => {
       code: 500,
       timestamp: new Date().toISOString(),
       path: req.path,
-      message: 'Lỗi khi cập nhật tài khoản!',
+      message: error.message,
       errors: [],
     }
     res.status(500).json(response)
   }
 }
 
-export const deleteAccount = async (req: Request, res: Response) => {
+export const deleteCategory = async (req: Request, res: Response) => {
   try {
-    const deletedAccount = await accountService.deleteAccount(req.params.id)
-    if (!deletedAccount) {
+    const deletedCategory = await tourCategoryService.deleteTourCategory(
+      req.params.id,
+    )
+    if (!deletedCategory) {
       const response: ResponseFailure = {
         code: 404,
         timestamp: new Date().toISOString(),
         path: req.path,
-        message: 'Không tìm thấy tài khoản',
+        message: 'Không tìm thấy category',
         errors: [],
       }
       res.status(404).json(response)
-      return
     }
 
-    const response: ResponseDetailSuccess<typeof deletedAccount> = {
+    const response: ResponseDetailSuccess<typeof deletedCategory> = {
       code: 200,
-      message: 'Xóa tài khoản thành công', 
-      data: deletedAccount,
+      message: 'Xóa category thành công',
+      data: deletedCategory,
     }
     res.status(200).json(response)
   } catch (error: any) {
@@ -186,7 +171,7 @@ export const deleteAccount = async (req: Request, res: Response) => {
       code: 500,
       timestamp: new Date().toISOString(),
       path: req.path,
-      message: 'Lỗi khi xóa tài khoản!',
+      message: error.message,
       errors: [],
     }
     res.status(500).json(response)

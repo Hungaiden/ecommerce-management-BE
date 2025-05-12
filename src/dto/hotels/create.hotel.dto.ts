@@ -1,6 +1,6 @@
 export enum HotelStatus {
-  OPENED = "Opened",
-  CLOSED = "Closed",
+  OPENED = 'Opened',
+  CLOSED = 'Closed',
 }
 
 export interface CreateHotelDto {

@@ -7,7 +7,8 @@
     "start": "node build/sever.js",
     "lint": "eslint src --ext js,ts --report-unused-disable-directives --max-warnings 0",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "tsc"
+    "build": "tsc",
+    "format": "npx eslint . --ext .ts --fix"
   },
   "author": "",
   "license": "ISC",
@@ -16,6 +17,7 @@
     "bcrypt": "^5.1.1",
     "body-parser": "^2.2.0",
     "cloudinary": "^2.6.0",
+    "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",

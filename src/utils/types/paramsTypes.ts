@@ -1,4 +1,4 @@
-import { TourStatus } from '../../dto/tours/create.tour.dto';
+import { TourStatus } from '../../dto/tours/create.tour.dto'
 
 export type SortParams = { sortBy: string; sortType: SORT_TYPE };
 

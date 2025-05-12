@@ -1,19 +1,19 @@
-import { Hotel } from "../../../models/hotels/hotel.model";
-import { CreateHotelDto } from "../../../dto/hotels/create.hotel.dto";
-import { UpdateHotelDto } from "../../../dto/hotels/update.hotel.dto";
-import * as paramsTypes from "../../../utils/types/paramsTypes";
+import { Hotel } from '../../../models/hotels/hotel.model'
+import type { CreateHotelDto } from '../../../dto/hotels/create.hotel.dto'
+import type { UpdateHotelDto } from '../../../dto/hotels/update.hotel.dto'
+import * as paramsTypes from '../../../utils/types/paramsTypes'
 // Hàm tạo Hotel
 export const createHotel = async (data: CreateHotelDto) => {
   // Kiểm tra nếu slug đã tồn tại
-  const existingHotel = await Hotel.findOne({ slug: data.slug });
+  const existingHotel = await Hotel.findOne({ slug: data.slug })
   if (existingHotel) {
-    throw new Error("Hotel slug đã tồn tại!");
+    throw new Error('Hotel slug đã tồn tại!')
   }
 
-  const newHotel = new Hotel(data);
-  await newHotel.save();
-  return newHotel;
-};
+  const newHotel = new Hotel(data)
+  await newHotel.save()
+  return newHotel
+}
 
 // Hàm lấy tất cả Hotel
 export const getAllHotels = async (
@@ -24,28 +24,28 @@ export const getAllHotels = async (
 ) => {
   try {
     // Bộ lọc
-    const query: any = { deleted: false };
-    if (filter.status) query.status = filter.status;
-    if (filter.minPrice) query.price = { $gte: filter.minPrice };
-    if (filter.maxPrice) query.price = { $lte: filter.maxPrice };
+    const query: any = { deleted: false }
+    if (filter.status) query.status = filter.status
+    if (filter.minPrice) query.price = { $gte: filter.minPrice }
+    if (filter.maxPrice) query.price = { $lte: filter.maxPrice }
 
     // Tìm kiếm theo từ khóa
     if (searchParams?.keyword && searchParams?.field) {
       query[searchParams.field] = {
         $regex: searchParams.keyword, // Tìm kiếm không phân biệt chữ hoa hay thường
-        $options: "i", // 'i' để không phân biệt hoa thường
-      };
+        $options: 'i', // 'i' để không phân biệt hoa thường
+      }
     }
 
     // Phân trang
-    const offset = paginateParams?.offset || 0;
-    const limit = paginateParams?.limit || 10;
+    const offset = paginateParams?.offset || 0
+    const limit = paginateParams?.limit || 10
 
     // Sắp xếp
-    const sortQuery: any = {};
+    const sortQuery: any = {}
     if (sortParams?.sortBy) {
       sortQuery[sortParams.sortBy] =
-        sortParams.sortType === paramsTypes.SORT_TYPE.ASC ? 1 : -1;
+        sortParams.sortType === paramsTypes.SORT_TYPE.ASC ? 1 : -1
     }
 
     // Truy vấn MongoDB
@@ -54,14 +54,14 @@ export const getAllHotels = async (
       .limit(limit) // Giới hạn số bản ghi trả về
       .sort(sortQuery) // Sắp xếp theo sortQuery
       .lean() // Chuyển đổi kết quả thành đối tượng JavaScript thuần túy
-    const totalRows = await Hotel.countDocuments(query); // Đếm tổng số bản ghi
-    const totalPages = Math.ceil(totalRows / limit); // Tính tổng số trang
+    const totalRows = await Hotel.countDocuments(query) // Đếm tổng số bản ghi
+    const totalPages = Math.ceil(totalRows / limit) // Tính tổng số trang
 
-    return { hotels, totalRows, totalPages };
+    return { hotels, totalRows, totalPages }
   } catch (error) {
-    throw new Error("Lỗi khi lấy danh sách hotel!");
+    throw new Error('Lỗi khi lấy danh sách hotel!')
   }
-};
+}
 
 
 // Hàm lấy Hotel theo ID
@@ -70,12 +70,12 @@ export const getHotelById = async (id: string) => {
     const hotel = await Hotel.findOne({
       _id: id,
       deleted: false,
-    });
-    return hotel;
+    })
+    return hotel
   } catch (error) {
-    throw new Error("Lỗi khi lấy thông tin khách sạn!");
+    throw new Error('Lỗi khi lấy thông tin khách sạn!')
   }
-};
+}
 
 // Hàm cập nhật Hotel
 export const updateHotel = async (id: string, data: UpdateHotelDto) => {
@@ -83,13 +83,13 @@ export const updateHotel = async (id: string, data: UpdateHotelDto) => {
     const updatedHotel = await Hotel.findOneAndUpdate(
       { _id: id, deleted: false },
       data,
-      { new: true }
-    );
-    return updatedHotel;
+      { new: true },
+    )
+    return updatedHotel
   } catch (error) {
-    throw new Error("Lỗi khi cập nhật khách sạn!");
+    throw new Error('Lỗi khi cập nhật khách sạn!')
   }
-};
+}
 
 // Hàm xóa Hotel (mềm)
 export const deleteHotel = async (id: string) => {
@@ -97,10 +97,10 @@ export const deleteHotel = async (id: string) => {
     const deletedHotel = await Hotel.findOneAndUpdate(
       { _id: id, deleted: false },
       { deleted: true },
-      { new: true }
-    );
-    return deletedHotel;
+      { new: true },
+    )
+    return deletedHotel
   } catch (error) {
-    throw new Error("Lỗi khi xóa khách sạn!");
+    throw new Error('Lỗi khi xóa khách sạn!')
   }
-};
+}

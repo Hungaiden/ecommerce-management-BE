@@ -8,6 +8,9 @@ const tourSchema = new mongoose.Schema(
       required: true,
       unique: true,
     },
+    category_id: {
+      type: String,
+    },
     images: [String],
     price: {
       type: Number,
@@ -17,6 +20,10 @@ const tourSchema = new mongoose.Schema(
     information: String,
     schedule: String,
     time_start: {
+      type: Date,
+      required: true,
+    },
+    time_end: {
       type: Date,
       required: true,
     },

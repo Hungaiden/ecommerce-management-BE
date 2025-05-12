@@ -1,30 +1,30 @@
-import { Account } from "../../../models/accounts/account.model";
-import { CreateAccountDto } from "../../../dto/accounts/create.account.dto";
-import { UpdateAccountDto } from "../../../dto/accounts/update.account.dto";
-import * as paramsTypes from "../../../utils/types/paramsTypes";
-import bcrypt from 'bcrypt';
+import { Account } from '../../../models/accounts/account.model'
+import type { CreateAccountDto } from '../../../dto/accounts/create.account.dto'
+import type { UpdateAccountDto } from '../../../dto/accounts/update.account.dto'
+import * as paramsTypes from '../../../utils/types/paramsTypes'
+import bcrypt from 'bcrypt'
 
-const SALT_ROUNDS = 10; // Số round để tạo salt
+const SALT_ROUNDS = 10 // Số round để tạo salt
 
 // Hàm tạo Account
 export const createAccount = async (data: CreateAccountDto) => {
   // Kiểm tra nếu email đã tồn tại
-  const existingAccount = await Account.findOne({ email: data.email });
+  const existingAccount = await Account.findOne({ email: data.email })
   if (existingAccount) {
-    throw new Error("Email đã tồn tại!");
+    throw new Error('Email đã tồn tại!')
   }
 
   // Hash password trước khi lưu
-  const hashedPassword = await bcrypt.hash(data.password, SALT_ROUNDS);
+  const hashedPassword = await bcrypt.hash(data.password, SALT_ROUNDS)
 
   // Tạo account mới với password đã được hash
   const newAccount = new Account({
     ...data,
-    password: hashedPassword
-  });
-  await newAccount.save();
-  return newAccount;
-};
+    password: hashedPassword,
+  })
+  await newAccount.save()
+  return newAccount
+}
 
 // Hàm lấy tất cả Account
 export const getAllAccounts = async (
@@ -34,25 +34,25 @@ export const getAllAccounts = async (
 ) => {
   try {
     // Điều kiện cơ bản
-    const query: any = { deleted: false };
+    const query: any = { deleted: false }
 
     // Tìm kiếm theo từ khóa
     if (searchParams?.keyword && searchParams?.field) {
       query[searchParams.field] = {
         $regex: searchParams.keyword,
-        $options: "i", 
-      };
+        $options: 'i', 
+      }
     }
 
     // Phân trang
-    const offset = paginateParams?.offset || 0;
-    const limit = paginateParams?.limit || 10;
+    const offset = paginateParams?.offset || 0
+    const limit = paginateParams?.limit || 10
 
     // Sắp xếp
-    const sortQuery: any = {};
+    const sortQuery: any = {}
     if (sortParams?.sortBy) {
       sortQuery[sortParams.sortBy] =
-        sortParams.sortType === paramsTypes.SORT_TYPE.ASC ? 1 : -1;
+        sortParams.sortType === paramsTypes.SORT_TYPE.ASC ? 1 : -1
     }
 
     // Truy vấn MongoDB
@@ -61,14 +61,14 @@ export const getAllAccounts = async (
       .limit(limit)
       .sort(sortQuery)
       .lean()
-    const totalRows = await Account.countDocuments(query);
-    const totalPages = Math.ceil(totalRows / limit);
+    const totalRows = await Account.countDocuments(query)
+    const totalPages = Math.ceil(totalRows / limit)
 
-    return { accounts, totalRows, totalPages };
+    return { accounts, totalRows, totalPages }
   } catch (error) {
-    throw new Error("Lỗi khi lấy danh sách tài khoản!");
+    throw new Error('Lỗi khi lấy danh sách tài khoản!')
   }
-};
+}
 
 // Hàm lấy Account theo ID  
 export const getAccountById = async (id: string) => {
@@ -76,31 +76,31 @@ export const getAccountById = async (id: string) => {
     const account = await Account.findOne({
       _id: id,
       deleted: false,
-    });
-    return account;
+    })
+    return account
   } catch (error) {
-    throw new Error("Lỗi khi lấy thông tin tài khoản!");
+    throw new Error('Lỗi khi lấy thông tin tài khoản!')
   }
-};
+}
 
 // Hàm cập nhật Account
 export const updateAccount = async (id: string, data: UpdateAccountDto) => {
   try {
     // Nếu có cập nhật password thì hash password mới
     if (data.password) {
-      data.password = await bcrypt.hash(data.password, SALT_ROUNDS);
+      data.password = await bcrypt.hash(data.password, SALT_ROUNDS)
     }
 
     const updatedAccount = await Account.findOneAndUpdate(
       { _id: id, deleted: false },
       data,
-      { new: true }
-    );
-    return updatedAccount;
+      { new: true },
+    )
+    return updatedAccount
   } catch (error) {
-    throw new Error("Lỗi khi cập nhật tài khoản!");
+    throw new Error('Lỗi khi cập nhật tài khoản!')
   }
-};
+}
 
 // Hàm xóa Account (mềm)
 export const deleteAccount = async (id: string) => {
@@ -108,10 +108,10 @@ export const deleteAccount = async (id: string) => {
     const deletedAccount = await Account.findOneAndUpdate(
       { _id: id, deleted: false },
       { deleted: true, deletedAt: new Date() },
-      { new: true }
-    );
-    return deletedAccount;
+      { new: true },
+    )
+    return deletedAccount
   } catch (error) {
-    throw new Error("Lỗi khi xóa tài khoản!");
+    throw new Error('Lỗi khi xóa tài khoản!')
   }
-};
+}

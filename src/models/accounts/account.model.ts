@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import mongoose from 'mongoose'
 
 const accountSchema = new mongoose.Schema(
   {
@@ -13,17 +13,17 @@ const accountSchema = new mongoose.Schema(
       type: String, 
       enum: ['Active', 'Inactive', 'Suspended'], 
       default: 'Active', 
-      required: true 
+      required: true, 
     },
     deleted: { 
       type: Boolean, 
-      default: false 
+      default: false, 
     },
-    deletedAt: { type: Date }
+    deletedAt: { type: Date },
   },
   {
-    timestamps: true
-  }
-);
+    timestamps: true,
+  },
+)
 
-export const Account = mongoose.model('Account', accountSchema, 'accounts');
+export const Account = mongoose.model('Account', accountSchema, 'accounts')

@@ -16,7 +16,7 @@ const roomTypeSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-  }
+  },
 )
 
 export const RoomType = mongoose.model('RoomType', roomTypeSchema, 'room_types')

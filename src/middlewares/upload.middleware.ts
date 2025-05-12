@@ -16,6 +16,7 @@ export const uploadSingle = async (req: Request, res: Response, next: NextFuncti
 }
 
 export const uploadMultiple = async (req: Request, res: Response, next: NextFunction) => {
+  // eslint-disable-next-line no-undef
   const files = req.files as Express.Multer.File[]
 
   if (!files || files.length === 0) {

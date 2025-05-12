@@ -1,29 +1,37 @@
-import { Router } from "express";
-import multer from "multer";
+import { Router } from 'express'
+import multer from 'multer'
 import upload from '../../../config/multer'
-import { uploadSingle, uploadMultiple } from "../../../middlewares/upload.middleware";
-const router: Router = Router();
+import { authMiddleware } from '../../../middlewares/auth.middleware'
+import { uploadSingle, uploadMultiple } from '../../../middlewares/upload.middleware'
+const router: Router = Router()
 
-import * as hotelController from "../../../controllers/admin/hotels/hotel.controller";
+import * as hotelController from '../../../controllers/admin/hotels/hotel.controller'
 
-router.get("/", hotelController.getAllHotels);
+
+
+router.get('/', hotelController.getAllHotels)
 
 router.post(
-  "/create", 
+  '/create', 
+  authMiddleware.isAuthorized,
   upload.array('images', 5), 
   uploadMultiple, 
-  hotelController.createHotel
-);
+  hotelController.createHotel,
+)
 
-router.get("/detail/:id", hotelController.getHotelById);
+router.get('/detail/:id', hotelController.getHotelById)
 
 router.patch(
-  "/update/:id", 
+  '/update/:id', 
+  authMiddleware.isAuthorized,
   upload.array('images', 5), 
   uploadMultiple, 
-  hotelController.updateHotel
-);
+  hotelController.updateHotel,
+)
 
-router.delete("/deleteOne/:id", hotelController.deleteHotel);
+router.delete(
+  '/deleteOne/:id',
+  authMiddleware.isAuthorized,
+  hotelController.deleteHotel)
 
-export const hotelsRoute: Router = router;
+export const hotelsRoute: Router = router

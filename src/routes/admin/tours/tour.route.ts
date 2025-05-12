@@ -1,28 +1,34 @@
-import { Router } from "express";
-import multer from "multer";
+import { Router } from 'express'
+import multer from 'multer'
 import upload from '../../../config/multer'
-import { uploadSingle, uploadMultiple } from "../../../middlewares/upload.middleware";
-const router: Router = Router();
+import { authMiddleware } from '../../../middlewares/auth.middleware'
+import { uploadSingle, uploadMultiple } from '../../../middlewares/upload.middleware'
+const router: Router = Router()
 
-import * as tourController from "../../../controllers/admin/tours/tour.controller";
+import * as tourController from '../../../controllers/admin/tours/tour.controller'
 
-router.get("/", tourController.getAllTours);
+router.get('/', tourController.getAllTours)
 
 router.post(
-  "/create", 
+  '/create', 
+  authMiddleware.isAuthorized,
   upload.array('images', 5), 
   uploadMultiple, 
-  tourController.createPost
-);
+  tourController.createPost,
+)
 
-router.get("/detail/:id", tourController.getTourById);
+router.get('/detail/:id', tourController.getTourById)
 
 router.patch(
-  "/update/:id", 
+  '/update/:id',
+  authMiddleware.isAuthorized, 
   upload.array('images', 5), 
   uploadMultiple,
-  tourController.updateTour);
+  tourController.updateTour)
 
-router.delete("/deleteOne/:id", tourController.deleteOneTour);
+router.delete(
+  '/deleteOne/:id', 
+  authMiddleware.isAuthorized,
+  tourController.deleteOneTour)
 
-export const toursRoute: Router = router;
+export const toursRoute: Router = router

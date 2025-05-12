@@ -51,7 +51,7 @@ const hotelBookingSchema = new mongoose.Schema(
       createdAt: 'created_at',
       updatedAt: 'updated_at',
     },
-  }
+  },
 )
 
 export const HotelBooking = mongoose.model('HotelBooking', hotelBookingSchema, 'hotel_bookings')

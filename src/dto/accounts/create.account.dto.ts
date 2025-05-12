@@ -1,7 +1,7 @@
 export enum AccountStatus {
-  ACTIVE = "Active",
-  INACTIVE = "Inactive",
-  SUSPENDED = "Suspended"
+  ACTIVE = 'Active',
+  INACTIVE = 'Inactive',
+  SUSPENDED = 'Suspended'
 }
 
 export interface CreateAccountDto {

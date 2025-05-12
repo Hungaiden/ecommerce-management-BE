@@ -1,6 +1,7 @@
 // Author: TrungQuanDev: https://youtube.com/@trungquandev
-import JWT, { SignOptions, JwtPayload } from 'jsonwebtoken'
-import { myJwtPayload } from '../utils/types/jwtTypes'
+import type { SignOptions, JwtPayload } from 'jsonwebtoken'
+import JWT from 'jsonwebtoken'
+import type { myJwtPayload } from '../utils/types/jwtTypes'
 /**
  * Kiểu dữ liệu cho thông tin người dùng đưa vào JWT
  * Có thể mở rộng tùy vào dữ liệu bạn muốn lưu trong token
@@ -14,12 +15,12 @@ import { myJwtPayload } from '../utils/types/jwtTypes'
 const generateToken = async (
   userInfo: myJwtPayload,
   secretSignature: string,
-  tokenLife: string | number
+  tokenLife: string | number,
 ): Promise<string> => {
   try {
     const options: SignOptions = {
       algorithm: 'HS256',
-      expiresIn: tokenLife as SignOptions['expiresIn']
+      expiresIn: tokenLife as SignOptions['expiresIn'],
     }
     return JWT.sign(userInfo, secretSignature, options)
   } catch (error: any) {
@@ -34,7 +35,7 @@ const generateToken = async (
  */
 const verifyToken = async (
   token: string,
-  secretSignature: string
+  secretSignature: string,
 ): Promise<string | JwtPayload> => {
   try {
     return JWT.verify(token, secretSignature)
@@ -46,5 +47,5 @@ const verifyToken = async (
 
 export const JwtProvider = {
   generateToken,
-  verifyToken
+  verifyToken,
 }

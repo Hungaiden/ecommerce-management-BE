@@ -1,29 +1,33 @@
-import { Router } from "express";
-import upload from '../../../config/multer';
-import { uploadSingle } from '../../../middlewares/upload.middleware';
+import { Router } from 'express'
+import upload from '../../../config/multer'
+import { uploadSingle } from '../../../middlewares/upload.middleware'
+import { authMiddleware } from '../../../middlewares/auth.middleware'
+const router: Router = Router()
 
-const router: Router = Router();
+import * as accountController from '../../../controllers/admin/accounts/account.controller'
 
-import * as accountController from "../../../controllers/admin/accounts/account.controller";
+// router.use(authMiddleware.isAuthorized)
 
-router.get("/", accountController.getAllAccounts);
+router.get('/', accountController.getAllAccounts)
 
 router.post(
-  "/create",
+  '/create',
   upload.single('avatar'),
   uploadSingle,
-  accountController.createAccount
-);
+  accountController.createAccount,
+)
 
-router.get("/detail/:id", accountController.getAccountById);
+router.get('/detail/:id', accountController.getAccountById)
 
 router.patch(
-  "/update/:id",
+  '/update/:id',
   upload.single('avatar'),
   uploadSingle,
-  accountController.updateAccount
-);
+  accountController.updateAccount,
+)
 
-router.delete("/deleteOne/:id", accountController.deleteAccount);
+router.delete(
+  '/deleteOne/:id', 
+  accountController.deleteAccount)
 
-export const accountsRoute: Router = router;
+export const accountsRoute: Router = router
