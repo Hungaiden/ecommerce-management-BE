@@ -31,6 +31,8 @@ export const getAllTours = async (
     if (filter.status) query.status = filter.status
     if (filter.minPrice) query.price = { $gte: filter.minPrice }
     if (filter.maxPrice) query.price = { $lte: filter.maxPrice }
+    if (filter.tourCategory) query.tourCategory = filter.tourCategory
+    if (filter.duration_days) query.duration_days = filter.duration_days
 
     // Tìm kiếm theo từ khóa
     if (searchParams?.keyword && searchParams?.field) {
@@ -50,7 +52,7 @@ export const getAllTours = async (
       sortQuery[sortParams.sortBy] =
         sortParams.sortType === paramsTypes.SORT_TYPE.ASC ? 1 : -1
     }
-    
+
     // Truy vấn MongoDB
     const tours = await Tour.find(query)
       .skip(offset) // Bỏ qua số lượng bản ghi dựa trên offset
@@ -73,6 +75,18 @@ export const getTourByIdService = async (id: string) => {
       _id: id,
       deleted: false,
     })
+      .populate({
+        path: 'reviews',
+        match: { 
+          deleted: false,
+          is_approved: true,
+        },
+        populate: {
+          path: 'user_id',
+          select: 'fullname email avatar',
+        },
+      })
+      .lean()
     return tour
   } catch (error) {
     throw new Error('Lỗi khi lấy thông tin tour!')

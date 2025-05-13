@@ -50,7 +50,21 @@ export const getAllCategories = async (req: Request, res: Response) => {
       sortParams,
       paginateParams,
     )
-
+    if (result.categories.length === 0) {
+      const response: ResponseListSuccess<typeof result.categories> = {
+        code: 200,
+        message: 'Không tìm thấy tour nào phù hợp',
+        data: {
+          hits: [],
+          pagination: {
+            totalRows: 0,
+            totalPages: 0,
+          },
+        },
+      }
+      res.status(200).json(response)
+      return
+    }
     const response: ResponseListSuccess<typeof result.categories> = {
       code: 200,
       message: 'Lấy danh sách category thành công',

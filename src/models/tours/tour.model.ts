@@ -9,8 +9,9 @@ const tourSchema = new mongoose.Schema(
       unique: true,
     },
     category_id: {
-      type: String,
-    },
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Category',
+    }, // Liên kết với bảng danh mục (Category)
     images: [String],
     price: {
       type: Number,
@@ -19,18 +20,18 @@ const tourSchema = new mongoose.Schema(
     discount: Number,
     information: String,
     schedule: String,
-    time_start: {
-      type: Date,
-      required: true,
-    },
-    time_end: {
-      type: Date,
+    duration_days: {
+      type: Number,
       required: true,
     },
     stock: {
       type: Number,
       required: true,
       default: 0,
+    },
+    transportation: {
+      type: String,
+      enum: ['bus', 'train', 'airplane', 'boat'],
     },
     status: {
       type: String,
@@ -43,6 +44,16 @@ const tourSchema = new mongoose.Schema(
       type: String,
       unique: true,
     },
+    average_rating: {
+      type: Number,
+      default: 0,
+    },
+    reviews: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'TourReview',
+      },
+    ],
     deleted: {
       type: Boolean,
       default: false,
@@ -58,7 +69,7 @@ const tourSchema = new mongoose.Schema(
 )
 
 // tao slug truoc khi luu
-tourSchema.pre('save', function(next) {
+tourSchema.pre('save', function (next) {
   if (this.isModified('title')) {
     this.slug = this.title
       .toLowerCase()
@@ -67,6 +78,5 @@ tourSchema.pre('save', function(next) {
   }
   next()
 })
-
 
 export const Tour = mongoose.model('Tour', tourSchema, 'tours')

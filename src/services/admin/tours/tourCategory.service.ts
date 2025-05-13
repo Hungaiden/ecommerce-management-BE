@@ -46,7 +46,6 @@ export const getAllTourCategories = async (
 
     const totalRows = await TourCategory.countDocuments(query)
     const totalPages = Math.ceil(totalRows / limit)
-
     return { categories, totalRows, totalPages }
   } catch (error) {
     throw new Error('Lỗi khi lấy danh sách category!')
