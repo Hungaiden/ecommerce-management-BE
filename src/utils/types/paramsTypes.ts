@@ -18,6 +18,7 @@ export type HotelFilterParams = {
   status?: string;
   minPrice?: number;
   maxPrice?: number;
+  city?: string;
 };
 
 export enum SORT_TYPE {

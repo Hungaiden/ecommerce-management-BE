@@ -1,8 +1,10 @@
 import { Tour } from '../../../models/tours/tour.model'
-
+import { TourCategory } from '../../../models/tours/tourCategory.model'
 import type { CreateTourDto } from '../../../dto/tours/create.tour.dto'
 import type { UpdateTourDto } from '../../../dto/tours/update.tour.dto'
 import * as paramsTypes from '../../../utils/types/paramsTypes'
+import { TourReview } from '../../../models/tours/tourReview.model'
+import mongoose from 'mongoose'
 
 // Hàm tạo Tour
 export const createTour = async (data: CreateTourDto) => {
@@ -76,17 +78,27 @@ export const getTourByIdService = async (id: string) => {
       deleted: false,
     })
       .populate({
+        path: 'category_id',
+        select: 'title',
+      }) // Populate category first
+      .populate({
         path: 'reviews',
-        match: { 
+        model: 'TourReview', // Explicitly specify model
+        match: {
           deleted: false,
           is_approved: true,
         },
         populate: {
           path: 'user_id',
+          model: 'Account',
           select: 'fullname email avatar',
         },
       })
-      .lean()
+      .exec() // Force execution of query
+
+    if (!tour) {
+      throw new Error('Tour không tồn tại!')
+    }
     return tour
   } catch (error) {
     throw new Error('Lỗi khi lấy thông tin tour!')
@@ -118,5 +130,45 @@ export const deleteOneTour = async (id: string) => {
     return deletedTour
   } catch (error) {
     throw new Error('Lỗi khi xóa tour!')
+  }
+}
+
+// Hàm lấy Tour theo category_id
+export const getToursByCategory = async (
+  categoryId: string,
+  searchParams?: paramsTypes.SearchParams,
+  sortParams?: paramsTypes.SortParams,
+  paginateParams?: paramsTypes.PaginateParams,
+) => {
+  try {
+    const query: any = { deleted: false ,category_id: new mongoose.Types.ObjectId(categoryId) }
+    if (searchParams?.keyword && searchParams?.field) {
+      query[searchParams.field] = {
+        $regex: searchParams.keyword,
+        $options: 'i',
+      }
+    }
+
+    const offset = paginateParams?.offset || 0
+    const limit = paginateParams?.limit || 10
+
+    const sortQuery: any = {}
+    if (sortParams?.sortBy) {
+      sortQuery[sortParams.sortBy] =
+        sortParams.sortType === paramsTypes.SORT_TYPE.ASC ? 1 : -1
+    }
+    
+    const tours = await Tour.find(query)
+      .skip(offset)
+      .limit(limit)
+      .sort(sortQuery)
+      .lean()
+
+    const totalRows = await Tour.countDocuments(query)
+    const totalPages = Math.ceil(totalRows / limit)
+
+    return { tours, totalRows, totalPages }
+  } catch (error) {
+    throw new Error('Lỗi khi lấy danh sách tour theo category!')
   }
 }

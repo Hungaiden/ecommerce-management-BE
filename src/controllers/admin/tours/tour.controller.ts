@@ -69,9 +69,9 @@ export const getAllTours = async (req: Request, res: Response) => {
         },
       }
       res.status(200).json(response)
-      return 
+      return
     }
-    const response: ResponseListSuccess<typeof result.tours > = {
+    const response: ResponseListSuccess<typeof result.tours> = {
       code: 200,
       message: 'Lấy danh sách tour thành công',
       data: {
@@ -107,6 +107,7 @@ export const getTourById = async (req: Request, res: Response) => {
         errors: [],
       }
       res.status(404).json(response)
+      return
     }
 
     const response: ResponseDetailSuccess<typeof tour> = {
@@ -139,6 +140,7 @@ export const updateTour = async (req: Request, res: Response) => {
         errors: [],
       }
       res.status(404).json(response)
+      return
     }
 
     const response: ResponseDetailSuccess<typeof updatedTour> = {
@@ -171,6 +173,7 @@ export const deleteOneTour = async (req: Request, res: Response) => {
         errors: [],
       }
       res.status(404).json(response)
+      return
     }
 
     const response: ResponseDetailSuccess<typeof deletedTour> = {
@@ -185,6 +188,70 @@ export const deleteOneTour = async (req: Request, res: Response) => {
       timestamp: new Date().toISOString(),
       path: req.path,
       message: 'Lỗi khi xóa tour!',
+      errors: [],
+    }
+    res.status(500).json(response)
+  }
+}
+
+export const getToursByCategory = async (req: Request, res: Response) => {
+  try {
+    const searchParams: paramsTypes.SearchParams = {
+      keyword: req.query.keyword as string,
+      field: req.query.field as string,
+    }
+
+    const sortParams: paramsTypes.SortParams = {
+      sortBy: req.query.sortBy as string,
+      sortType: req.query.sortType as paramsTypes.SORT_TYPE,
+    }
+
+    const paginateParams: paramsTypes.PaginateParams = {
+      offset: req.query.offset ? parseInt(req.query.offset as string) : 0,
+      limit: req.query.limit ? parseInt(req.query.limit as string) : 10,
+    }
+
+    const result = await tourService.getToursByCategory(
+      req.params.categoryId,
+      searchParams,
+      sortParams,
+      paginateParams,
+    )
+    
+    if (result.tours.length === 0) {
+      const response: ResponseListSuccess<typeof result.tours> = {
+        code: 200,
+        message: 'Không tìm thấy tour nào trong category này',
+        data: {
+          hits: [],
+          pagination: {
+            totalRows: 0,
+            totalPages: 0,
+          },
+        },
+      }
+      res.status(200).json(response)
+      return 
+    }
+
+    const response: ResponseListSuccess<typeof result.tours> = {
+      code: 200,
+      message: 'Lấy danh sách tour theo category thành công',
+      data: {
+        hits: result.tours,
+        pagination: {
+          totalRows: result.totalRows,
+          totalPages: result.totalPages,
+        },
+      },
+    }
+    res.status(200).json(response)
+  } catch (error: any) {
+    const response: ResponseFailure = {
+      code: 500,
+      timestamp: new Date().toISOString(),
+      path: req.path,
+      message: error.message,
       errors: [],
     }
     res.status(500).json(response)

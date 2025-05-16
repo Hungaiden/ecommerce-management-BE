@@ -1,5 +1,5 @@
 import type { Request, Response } from 'express'
-import * as tourCategoryService from '../../../services/admin/tours/tourCategory.service'
+import * as roomTypeService from '../../../services/admin/hotels/roomType.service'
 import type * as paramsTypes from '../../../utils/types/paramsTypes'
 import type {
   ResponseDetailSuccess,
@@ -7,13 +7,13 @@ import type {
   ResponseFailure,
 } from '../../../utils/types/ResponseTypes'
 
-export const createCategory = async (req: Request, res: Response) => {
+export const createRoomType = async (req: Request, res: Response) => {
   try {
-    const category = await tourCategoryService.createTourCategory(req.body)
-    const response: ResponseDetailSuccess<typeof category> = {
+    const roomType = await roomTypeService.createRoomType(req.body)
+    const response: ResponseDetailSuccess<typeof roomType> = {
       code: 201,
-      message: 'Tạo category thành công',
-      data: category,
+      message: 'Tạo loại phòng thành công',
+      data: roomType,
     }
     res.status(201).json(response)
   } catch (error: any) {
@@ -28,7 +28,7 @@ export const createCategory = async (req: Request, res: Response) => {
   }
 }
 
-export const getAllCategories = async (req: Request, res: Response) => {
+export const getAllRoomTypes = async (req: Request, res: Response) => {
   try {
     const searchParams: paramsTypes.SearchParams = {
       keyword: req.query.keyword as string,
@@ -45,15 +45,17 @@ export const getAllCategories = async (req: Request, res: Response) => {
       limit: req.query.limit ? parseInt(req.query.limit as string) : 10,
     }
 
-    const result = await tourCategoryService.getAllTourCategories(
+    const result = await roomTypeService.getAllRoomTypes(
       searchParams,
       sortParams,
       paginateParams,
+      req.query.hotel_id as string,
     )
-    if (result.categories.length === 0) {
-      const response: ResponseListSuccess<typeof result.categories> = {
+
+    if (result.roomTypes.length === 0) {
+      const response: ResponseListSuccess<typeof result.roomTypes> = {
         code: 200,
-        message: 'Không tìm thấy tour nào phù hợp',
+        message: 'Không tìm thấy loại phòng nào',
         data: {
           hits: [],
           pagination: {
@@ -65,11 +67,12 @@ export const getAllCategories = async (req: Request, res: Response) => {
       res.status(200).json(response)
       return
     }
-    const response: ResponseListSuccess<typeof result.categories> = {
+
+    const response: ResponseListSuccess<typeof result.roomTypes> = {
       code: 200,
-      message: 'Lấy danh sách category thành công',
+      message: 'Lấy danh sách loại phòng thành công',
       data: {
-        hits: result.categories,
+        hits: result.roomTypes,
         pagination: {
           totalRows: result.totalRows,
           totalPages: result.totalPages,
@@ -89,27 +92,25 @@ export const getAllCategories = async (req: Request, res: Response) => {
   }
 }
 
-export const getCategoryById = async (req: Request, res: Response) => {
+export const getRoomTypeById = async (req: Request, res: Response) => {
   try {
-    const category = await tourCategoryService.getTourCategoryById(
-      req.params.id,
-    )
-    if (!category) {
+    const roomType = await roomTypeService.getRoomTypeById(req.params.id)
+    if (!roomType) {
       const response: ResponseFailure = {
         code: 404,
         timestamp: new Date().toISOString(),
         path: req.path,
-        message: 'Không tìm thấy category',
+        message: 'Không tìm thấy loại phòng',
         errors: [],
       }
       res.status(404).json(response)
       return
     }
 
-    const response: ResponseDetailSuccess<typeof category> = {
+    const response: ResponseDetailSuccess<typeof roomType> = {
       code: 200,
-      message: 'Lấy thông tin category thành công',
-      data: category,
+      message: 'Lấy thông tin loại phòng thành công',
+      data: roomType,
     }
     res.status(200).json(response)
   } catch (error: any) {
@@ -124,28 +125,28 @@ export const getCategoryById = async (req: Request, res: Response) => {
   }
 }
 
-export const updateCategory = async (req: Request, res: Response) => {
+export const updateRoomType = async (req: Request, res: Response) => {
   try {
-    const updatedCategory = await tourCategoryService.updateTourCategory(
+    const updatedRoomType = await roomTypeService.updateRoomType(
       req.params.id,
       req.body,
     )
-    if (!updatedCategory) {
+    if (!updatedRoomType) {
       const response: ResponseFailure = {
         code: 404,
         timestamp: new Date().toISOString(),
         path: req.path,
-        message: 'Không tìm thấy category',
+        message: 'Không tìm thấy loại phòng',
         errors: [],
       }
       res.status(404).json(response)
       return
     }
 
-    const response: ResponseDetailSuccess<typeof updatedCategory> = {
+    const response: ResponseDetailSuccess<typeof updatedRoomType> = {
       code: 200,
-      message: 'Cập nhật category thành công',
-      data: updatedCategory,
+      message: 'Cập nhật loại phòng thành công',
+      data: updatedRoomType,
     }
     res.status(200).json(response)
   } catch (error: any) {
@@ -160,27 +161,25 @@ export const updateCategory = async (req: Request, res: Response) => {
   }
 }
 
-export const deleteCategory = async (req: Request, res: Response) => {
+export const deleteRoomType = async (req: Request, res: Response) => {
   try {
-    const deletedCategory = await tourCategoryService.deleteTourCategory(
-      req.params.id,
-    )
-    if (!deletedCategory) {
+    const deletedRoomType = await roomTypeService.deleteRoomType(req.params.id)
+    if (!deletedRoomType) {
       const response: ResponseFailure = {
         code: 404,
         timestamp: new Date().toISOString(),
         path: req.path,
-        message: 'Không tìm thấy category',
+        message: 'Không tìm thấy loại phòng',
         errors: [],
       }
       res.status(404).json(response)
       return
     }
 
-    const response: ResponseDetailSuccess<typeof deletedCategory> = {
+    const response: ResponseDetailSuccess<typeof deletedRoomType> = {
       code: 200,
-      message: 'Xóa category thành công',
-      data: deletedCategory,
+      message: 'Xóa loại phòng thành công',
+      data: deletedRoomType,
     }
     res.status(200).json(response)
   } catch (error: any) {

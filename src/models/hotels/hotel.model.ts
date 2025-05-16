@@ -5,17 +5,15 @@ const hotelSchema = new mongoose.Schema(
     slug: { type: String, required: true, unique: true },
     name: { type: String, required: true },
     description: { type: String, required: true },
-    category: { type: String },
+    images: [String],
     parking_included: { type: Boolean },
     deleted: { type: Boolean, default: false },
-    query: { type: String },
     street_address: { type: String },
     city: { type: String },
     state_province: { type: String },
-    postal_code: { type: String },
     country: { type: String },
-    lat: { type: Number, required: true },
-    lon: { type: Number, required: true },
+    // lat: { type: Number, required: true }, // vi do
+    // lon: { type: Number, required: true }, // kinh do
     status: {
       type: String,
       enum: ['Opened', 'Closed'],
@@ -24,6 +22,14 @@ const hotelSchema = new mongoose.Schema(
     },
     position: Number,
     total_rooms: { type: Number, required: true },
+    phone: { type: String },
+    email: { type: String },
+    check_in_time: { type: String, default: '14:00' },
+    check_out_time: { type: String, default: '12:00' },
+    average_rating: {
+      type: Number,
+      default: 0,
+    },
   },
   {
     timestamps: true,

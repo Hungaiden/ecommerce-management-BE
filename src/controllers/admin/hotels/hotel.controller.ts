@@ -34,18 +34,19 @@ export const getAllHotels = async (req: Request, res: Response) => {
       status: req.query.status as string,
       minPrice: req.query.minPrice ? Number(req.query.minPrice) : undefined,
       maxPrice: req.query.maxPrice ? Number(req.query.maxPrice) : undefined,
+      city: req.query.city as string,
     }
-  
+
     const searchParams: paramsTypes.SearchParams = {
       keyword: req.query.keyword as string,
       field: req.query.field as string,
     }
-  
+
     const sortParams: paramsTypes.SortParams = {
       sortBy: req.query.sortBy as string,
       sortType: req.query.sortType as paramsTypes.SORT_TYPE,
     }
-  
+
     const paginateParams: paramsTypes.PaginateParams = {
       offset: req.query.offset ? parseInt(req.query.offset as string) : 0,
       limit: req.query.limit ? parseInt(req.query.limit as string) : 10,
@@ -69,9 +70,9 @@ export const getAllHotels = async (req: Request, res: Response) => {
         },
       }
       res.status(200).json(response)
-      return 
+      return
     }
-    const response: ResponseListSuccess<typeof result.hotels > = {
+    const response: ResponseListSuccess<typeof result.hotels> = {
       code: 200,
       message: 'Lấy danh sách hotel thành công',
       data: {
@@ -107,6 +108,7 @@ export const getHotelById = async (req: Request, res: Response) => {
         errors: [],
       }
       res.status(404).json(response)
+      return
     }
 
     const response: ResponseDetailSuccess<typeof hotel> = {
@@ -129,7 +131,10 @@ export const getHotelById = async (req: Request, res: Response) => {
 
 export const updateHotel = async (req: Request, res: Response) => {
   try {
-    const updatedHotel = await hotelService.updateHotel(req.params.id, req.body)
+    const updatedHotel = await hotelService.updateHotel(
+      req.params.id,
+      req.body,
+    )
     if (!updatedHotel) {
       const response: ResponseFailure = {
         code: 404,
@@ -172,6 +177,7 @@ export const deleteHotel = async (req: Request, res: Response) => {
         errors: [],
       }
       res.status(404).json(response)
+      return
     }
 
     const response: ResponseDetailSuccess<typeof deletedHotel> = {
@@ -186,6 +192,52 @@ export const deleteHotel = async (req: Request, res: Response) => {
       timestamp: new Date().toISOString(),
       path: req.path,
       message: 'Lỗi khi xóa khách sạn!',
+      errors: [],
+    }
+    res.status(500).json(response)
+  }
+}
+
+export const getRoomTypesByHotelId = async (req: Request, res: Response) => {
+  try {
+    const roomTypes = await hotelService.getRoomTypesByHotelId(
+      req.params.hotelId,
+    )
+
+    if (!roomTypes || roomTypes.length === 0) {
+      const response: ResponseListSuccess<typeof roomTypes> = {
+        code: 200,
+        message: 'Không tìm thấy loại phòng nào',
+        data: {
+          hits: [],
+          pagination: {
+            totalRows: 0,
+            totalPages: 0,
+          },
+        },
+      }
+      res.status(200).json(response)
+      return
+    }
+
+    const response: ResponseListSuccess<typeof roomTypes> = {
+      code: 200,
+      message: 'Lấy danh sách loại phòng thành công',
+      data: {
+        hits: roomTypes,
+        pagination: {
+          totalRows: roomTypes.length,
+          totalPages: 1,
+        },
+      },
+    }
+    res.status(200).json(response)
+  } catch (error: any) {
+    const response: ResponseFailure = {
+      code: 500,
+      timestamp: new Date().toISOString(),
+      path: req.path,
+      message: error.message,
       errors: [],
     }
     res.status(500).json(response)

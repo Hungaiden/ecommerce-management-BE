@@ -10,7 +10,7 @@ const tourSchema = new mongoose.Schema(
     },
     category_id: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Category',
+      ref: 'TourCategory',
     }, // Liên kết với bảng danh mục (Category)
     images: [String],
     price: {

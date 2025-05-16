@@ -1,7 +1,10 @@
 import { Router } from 'express'
 import upload from '../../../config/multer'
 import { authMiddleware } from '../../../middlewares/auth.middleware'
-import { uploadSingle, uploadMultiple } from '../../../middlewares/upload.middleware'
+import {
+  uploadSingle,
+  uploadMultiple,
+} from '../../../middlewares/upload.middleware'
 const router: Router = Router()
 
 import * as tourController from '../../../controllers/admin/tours/tour.controller'
@@ -9,25 +12,30 @@ import * as tourController from '../../../controllers/admin/tours/tour.controlle
 router.get('/', tourController.getAllTours)
 
 router.post(
-  '/create', 
+  '/create',
   authMiddleware.isAuthorized,
-  upload.array('images', 5), 
-  uploadMultiple, 
+  upload.array('images', 5),
+  uploadMultiple,
   tourController.createPost,
 )
 
 router.get('/detail/:id', tourController.getTourById)
 
+router.get('/category/:categoryId', tourController.getToursByCategory)
+
 router.patch(
   '/update/:id',
-  authMiddleware.isAuthorized, 
-  upload.array('images', 5), 
+  authMiddleware.isAuthorized,
+  upload.array('images', 5),
   uploadMultiple,
-  tourController.updateTour)
+  tourController.updateTour,
+)
 
 router.delete(
-  '/deleteOne/:id', 
+  '/deleteOne/:id',
   authMiddleware.isAuthorized,
-  tourController.deleteOneTour)
+  tourController.deleteOneTour,
+)
+
 
 export const toursRoute: Router = router
