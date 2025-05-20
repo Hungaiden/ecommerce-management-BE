@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose'
 
 const tourSchema = new mongoose.Schema(
   {
@@ -10,7 +10,7 @@ const tourSchema = new mongoose.Schema(
     },
     category_id: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "TourCategory",
+      ref: 'TourCategory',
     }, // Liên kết với bảng danh mục (Category)
     images: [String],
     price: {
@@ -31,13 +31,13 @@ const tourSchema = new mongoose.Schema(
     },
     transportation: {
       type: String,
-      enum: ["bus", "train", "airplane", "boat"],
+      enum: ['bus', 'train', 'airplane', 'boat'],
     },
     status: {
       type: String,
       required: true,
-      enum: ["active", "inactive", "pending"],
-      default: "active",
+      enum: ['active', 'inactive', 'pending'],
+      default: 'active',
     },
     position: Number,
     slug: {
@@ -51,7 +51,7 @@ const tourSchema = new mongoose.Schema(
     reviews: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "TourReview",
+        ref: 'TourReview',
       },
     ],
     deleted: {
@@ -59,26 +59,26 @@ const tourSchema = new mongoose.Schema(
       default: false,
     },
     deleted_at: {
-      type: Number,
+      type: Date,
     },
   },
   {
     timestamps: {
-      createdAt: "created_at",
-      updatedAt: "updated_at",
+      createdAt: 'created_at',
+      updatedAt: 'updated_at',
     },
-  }
-);
+  },
+)
 
 // tao slug truoc khi luu
-tourSchema.pre("save", function (next) {
-  if (this.isModified("title")) {
+tourSchema.pre('save', function (next) {
+  if (this.isModified('title')) {
     this.slug = this.title
       .toLowerCase()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/(^-|-$)/g, "");
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/(^-|-$)/g, '')
   }
-  next();
-});
+  next()
+})
 
-export const Tour = mongoose.model("Tour", tourSchema, "tours");
+export const Tour = mongoose.model('Tour', tourSchema, 'tours')

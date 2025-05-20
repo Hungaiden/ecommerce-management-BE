@@ -1,29 +1,29 @@
-import { Router } from "express";
-import { authMiddleware } from "../../../middlewares/auth.middleware";
-const router: Router = Router();
+import { Router } from 'express'
+import { authMiddleware } from '../../../middlewares/auth.middleware'
+const router: Router = Router()
 
-import * as ticketClassController from "../../../controllers/admin/flights/ticketClass.controller";
+import * as ticketClassController from '../../../controllers/admin/flights/ticketClass.controller'
 
 router.post(
-  "/create",
+  '/create',
   authMiddleware.isAuthorized,
-  ticketClassController.createTicketClass
-);
+  ticketClassController.createTicketClass,
+)
 
-router.get("/", ticketClassController.getAllTicketClasses);
+router.get('/', ticketClassController.getAllTicketClasses)
 
-router.get("/detail/:id", ticketClassController.getTicketClassById);
+router.get('/detail/:id', ticketClassController.getTicketClassById)
 
 router.patch(
-  "/update/:id",
+  '/update/:id',
   authMiddleware.isAuthorized,
-  ticketClassController.updateTicketClass
-);
+  ticketClassController.updateTicketClass,
+)
 
 router.delete(
-  "/delete/:id",
+  '/delete/:id',
   authMiddleware.isAuthorized,
-  ticketClassController.deleteTicketClass
-);
+  ticketClassController.deleteTicketClass,
+)
 
-export const ticketClassRoute: Router = router;
+export const ticketClassRoute: Router = router

@@ -1,17 +1,17 @@
 // models/FlightPrice.js
-import mongoose from "mongoose";
+import mongoose from 'mongoose'
 
 const flightPriceSchema = new mongoose.Schema(
   {
     flight_id: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Flight",
+      ref: 'Flight',
       required: true,
     },
     class: {
       type: String,
       required: true,
-      enum: ["economy", "premium_economy", "business", "first"],
+      enum: ['economy', 'premium_economy', 'business', 'first'],
     },
     base_price: {
       type: Number,
@@ -38,19 +38,19 @@ const flightPriceSchema = new mongoose.Schema(
       default: false,
     },
     deleted_at: {
-      type: Number,
+      type: Date,
     },
   },
   {
     timestamps: {
-      createdAt: "created_at",
-      updatedAt: "updated_at",
+      createdAt: 'created_at',
+      updatedAt: 'updated_at',
     },
-  }
-);
+  },
+)
 
 export const FlightPrice = mongoose.model(
-  "TicketClass",
+  'TicketClass',
   flightPriceSchema,
-  "flight_ticket_classes"
-);
+  'flight_ticket_classes',
+)

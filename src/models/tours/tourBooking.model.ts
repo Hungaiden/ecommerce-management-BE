@@ -1,23 +1,23 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose'
 
 const tourBookingSchema = new mongoose.Schema(
   {
     tour_id: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Tour",
+      ref: 'Tour',
       required: true,
     },
     user_id: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Account",
+      ref: 'Account',
     },
     booking_date: {
-      type: Number,
+      type: Date,
       required: true,
-      default: () => Date.now(),
+      default: Date.now,
     },
     start_date: {
-      type: Number,
+      type: Date,
       required: true,
     },
     number_of_people: {
@@ -36,8 +36,8 @@ const tourBookingSchema = new mongoose.Schema(
     status: {
       type: String,
       required: true,
-      enum: ["pending", "confirmed", "cancelled", "completed"],
-      default: "pending",
+      enum: ['pending', 'confirmed', 'cancelled', 'completed'],
+      default: 'pending',
     },
 
     total_price: {
@@ -49,15 +49,15 @@ const tourBookingSchema = new mongoose.Schema(
     payment_status: {
       type: String,
       required: true,
-      enum: ["pending", "paid", "failed", "refunded"],
-      default: "pending",
+      enum: ['pending', 'paid', 'failed', 'refunded'],
+      default: 'pending',
     },
 
     // Thêm phương thức thanh toán
     payment_method: {
       type: String,
-      enum: ["vnpay", "momo", "cash"],
-      default: "vnpay",
+      enum: ['vnpay', 'momo', 'cash'],
+      default: 'vnpay',
     }, // => Cho biết khách chọn thanh toán qua đâu
 
     // Mã giao dịch từ cổng thanh toán (ví dụ từ VNPAY: vnp_TxnRef)
@@ -67,7 +67,7 @@ const tourBookingSchema = new mongoose.Schema(
 
     // Thời điểm thanh toán thành công (ghi log)
     payment_time: {
-      type: Number,
+      type: Date,
     },
 
     //  Mã phản hồi từ cổng thanh toán (VNPAY: "00" = thành công)
@@ -85,19 +85,19 @@ const tourBookingSchema = new mongoose.Schema(
       default: false,
     },
     deleted_at: {
-      type: Number,
+      type: Date,
     },
   },
   {
     timestamps: {
-      createdAt: "created_at",
-      updatedAt: "updated_at",
+      createdAt: 'created_at',
+      updatedAt: 'updated_at',
     },
-  }
-);
+  },
+)
 
 export const TourBooking = mongoose.model(
-  "TourBooking",
+  'TourBooking',
   tourBookingSchema,
-  "tour_bookings"
-);
+  'tour_bookings',
+)

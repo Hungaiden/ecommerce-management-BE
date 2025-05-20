@@ -1,25 +1,25 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose'
 
 const flightBookingSchema = new mongoose.Schema(
   {
     flight_id: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Flight",
+      ref: 'Flight',
       required: true,
     },
     user_id: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Account",
+      ref: 'Account',
     },
     travel_class: {
       type: String,
       required: true,
-      ref: "TicketClass",
+      ref: 'TicketClass',
     },
     booking_date: {
-      type: Number,
+      type: Date,
       required: true,
-      default: () => Date.now(),
+      default: Date.now,
     },
     seat_number: {
       type: String,
@@ -36,8 +36,8 @@ const flightBookingSchema = new mongoose.Schema(
     status: {
       type: String,
       required: true,
-      enum: ["pending", "confirmed", "cancelled", "completed"],
-      default: "pending",
+      enum: ['pending', 'confirmed', 'cancelled', 'completed'],
+      default: 'pending',
     },
 
     total_price: {
@@ -48,14 +48,14 @@ const flightBookingSchema = new mongoose.Schema(
     payment_status: {
       type: String,
       required: true,
-      enum: ["pending", "paid", "failed", "refunded"],
-      default: "pending",
+      enum: ['pending', 'paid', 'failed', 'refunded'],
+      default: 'pending',
     },
 
     payment_method: {
       type: String,
-      enum: ["vnpay", "momo", "cash", "paypal", "credit_card"],
-      default: "vnpay",
+      enum: ['vnpay', 'momo', 'cash', 'paypal', 'credit_card'],
+      default: 'vnpay',
     },
 
     transaction_code: {
@@ -63,7 +63,7 @@ const flightBookingSchema = new mongoose.Schema(
     },
 
     payment_time: {
-      type: Number,
+      type: Date,
     },
 
     vnp_response_code: {
@@ -79,19 +79,19 @@ const flightBookingSchema = new mongoose.Schema(
       default: false,
     },
     deleted_at: {
-      type: Number,
+      type: Date,
     },
   },
   {
     timestamps: {
-      createdAt: "created_at",
-      updatedAt: "updated_at",
+      createdAt: 'created_at',
+      updatedAt: 'updated_at',
     },
-  }
-);
+  },
+)
 
 export const FlightBooking = mongoose.model(
-  "FlightBooking",
+  'FlightBooking',
   flightBookingSchema,
-  "flight_bookings"
-);
+  'flight_bookings',
+)

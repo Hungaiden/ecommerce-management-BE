@@ -35,7 +35,7 @@ const airlineSchema = new mongoose.Schema(
       createdAt: 'created_at',
       updatedAt: 'updated_at',
     },
-  }
+  },
 )
 
 export const Airline = mongoose.model('Airline', airlineSchema, 'airlines')

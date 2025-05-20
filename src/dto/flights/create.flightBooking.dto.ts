@@ -13,7 +13,7 @@ export interface CreateFlightBookingDto {
   contact_info: ContactInfo;
   note?: string;
   total_price: number;
-  payment_method?: "vnpay" | "momo" | "cash" | "paypal" | "credit_card";
-  status?: "pending" | "confirmed" | "cancelled" | "completed";
-  payment_status?: "pending" | "paid" | "failed" | "refunded";
+  payment_method?: 'vnpay' | 'momo' | 'cash' | 'paypal' | 'credit_card';
+  status?: 'pending' | 'confirmed' | 'cancelled' | 'completed';
+  payment_status?: 'pending' | 'paid' | 'failed' | 'refunded';
 }

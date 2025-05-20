@@ -1,27 +1,27 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose'
 
 const hotelBookingSchema = new mongoose.Schema(
   {
     user_id: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+      ref: 'User',
     },
     hotel_id: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Hotel",
+      ref: 'Hotel',
       required: true,
     },
     room_type_id: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "RoomType",
+      ref: 'RoomType',
       required: true,
     },
     check_in: {
-      type: Number,
+      type: Date,
       required: true,
     },
     check_out: {
-      type: Number,
+      type: Date,
       required: true,
     },
     num_rooms: {
@@ -37,8 +37,8 @@ const hotelBookingSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ["pending", "confirmed", "cancelled"],
-      default: "pending",
+      enum: ['pending', 'confirmed', 'cancelled'],
+      default: 'pending',
       required: true,
     },
     payment_id: {
@@ -46,19 +46,19 @@ const hotelBookingSchema = new mongoose.Schema(
     },
     deleted: { type: Boolean, default: false },
     deleted_at: {
-      type: Number,
+      type: Date,
     },
   },
   {
     timestamps: {
-      createdAt: "created_at",
-      updatedAt: "updated_at",
+      createdAt: 'created_at',
+      updatedAt: 'updated_at',
     },
-  }
-);
+  },
+)
 
 export const HotelBooking = mongoose.model(
-  "HotelBooking",
+  'HotelBooking',
   hotelBookingSchema,
-  "hotel_bookings"
-);
+  'hotel_bookings',
+)

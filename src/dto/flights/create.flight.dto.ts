@@ -7,5 +7,5 @@ export interface CreateFlightDto {
   arrival_datetime: Date;
   duration_minutes: number;
   available_seats: number;
-  status?: "scheduled" | "in-air" | "landed" | "canceled";
+  status?: 'scheduled' | 'in-air' | 'landed' | 'canceled';
 }

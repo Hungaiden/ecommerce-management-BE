@@ -6,5 +6,5 @@ export interface CreateAirportDto {
   latitude?: number;
   longitude?: number;
   terminals?: string[];
-  status?: "active" | "inactive";
+  status?: 'active' | 'inactive';
 }

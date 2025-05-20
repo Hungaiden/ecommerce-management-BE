@@ -1,15 +1,15 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose'
 
 const tourReviewSchema = new mongoose.Schema(
   {
     tour_id: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Tour",
+      ref: 'Tour',
       required: true,
     },
     user_id: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Account",
+      ref: 'Account',
       required: true,
     },
     rating: {
@@ -21,7 +21,7 @@ const tourReviewSchema = new mongoose.Schema(
     comment: {
       type: String,
       trim: true, // Loại bỏ khoảng trắng thừa
-      maxLength: [1000, "Nội dung đánh giá không được vượt quá 1000 ký tự"],
+      maxLength: [1000, 'Nội dung đánh giá không được vượt quá 1000 ký tự'],
     },
     images: [String],
     is_approved: {
@@ -33,20 +33,20 @@ const tourReviewSchema = new mongoose.Schema(
       default: false,
     },
     deleted_at: {
-      type: Number,
+      type: Date,
     },
   },
   {
     timestamps: {
-      createdAt: "created_at",
-      updatedAt: "updated_at",
+      createdAt: 'created_at',
+      updatedAt: 'updated_at',
     },
-  }
-);
+  },
+)
 // Thêm unique constraint để ngăn người dùng review nhiều lần:
-tourReviewSchema.index({ tour_id: 1, user_id: 1 }, { unique: true });
+tourReviewSchema.index({ tour_id: 1, user_id: 1 }, { unique: true })
 export const TourReview = mongoose.model(
-  "TourReview",
+  'TourReview',
   tourReviewSchema,
-  "tour_reviews"
-);
+  'tour_reviews',
+)

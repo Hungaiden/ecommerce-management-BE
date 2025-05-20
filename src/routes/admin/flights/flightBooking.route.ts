@@ -1,43 +1,43 @@
-import { Router } from "express";
-import { authMiddleware } from "../../../middlewares/auth.middleware";
-const router: Router = Router();
+import { Router } from 'express'
+import { authMiddleware } from '../../../middlewares/auth.middleware'
+const router: Router = Router()
 
-import * as flightBookingController from "../../../controllers/admin/flights/flightBooking.controller";
+import * as flightBookingController from '../../../controllers/admin/flights/flightBooking.controller'
 
 router.post(
-  "/create",
+  '/create',
   authMiddleware.isAuthorized,
-  flightBookingController.createBooking
-);
+  flightBookingController.createBooking,
+)
 
 router.get(
-  "/",
+  '/',
   authMiddleware.isAuthorized,
-  flightBookingController.getAllBookings
-);
+  flightBookingController.getAllBookings,
+)
 
 router.get(
-  "/detail/:id",
+  '/detail/:id',
   authMiddleware.isAuthorized,
-  flightBookingController.getBookingById
-);
+  flightBookingController.getBookingById,
+)
 
 router.patch(
-  "/update/:id",
+  '/update/:id',
   authMiddleware.isAuthorized,
-  flightBookingController.updateBooking
-);
+  flightBookingController.updateBooking,
+)
 
 router.delete(
-  "/delete/:id",
+  '/delete/:id',
   authMiddleware.isAuthorized,
-  flightBookingController.deleteBooking
-);
+  flightBookingController.deleteBooking,
+)
 
 router.get(
-  "/user/:userId",
+  '/user/:userId',
   authMiddleware.isAuthorized,
-  flightBookingController.getBookingsByUserId
-);
+  flightBookingController.getBookingsByUserId,
+)
 
-export const flightBookingRoute: Router = router;
+export const flightBookingRoute: Router = router

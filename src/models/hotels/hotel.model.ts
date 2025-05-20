@@ -25,12 +25,12 @@ const hotelSchema = new mongoose.Schema(
     phone: { type: String },
     email: { type: String },
     check_in_time: {
-      type: Number,
-      default: () => new Date('1970-01-01T14:00:00Z').getTime(),
+      type: Date,
+      default: () => new Date().setHours(14, 0, 0, 0),
     },
     check_out_time: {
-      type: Number,
-      default: () => new Date('1970-01-01T12:00:00Z').getTime(),
+      type: Date,
+      default: () => new Date().setHours(12, 0, 0, 0),
     },
 
     average_rating: {

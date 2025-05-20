@@ -1,29 +1,29 @@
-import { Router } from "express";
-import { authMiddleware } from "../../../middlewares/auth.middleware";
-const router: Router = Router();
+import { Router } from 'express'
+import { authMiddleware } from '../../../middlewares/auth.middleware'
+const router: Router = Router()
 
-import * as flightController from "../../../controllers/admin/flights/flight.controller";
+import * as flightController from '../../../controllers/admin/flights/flight.controller'
 
 router.post(
-  "/create",
+  '/create',
   authMiddleware.isAuthorized,
-  flightController.createFlight
-);
+  flightController.createFlight,
+)
 
-router.get("/", flightController.getAllFlights);
+router.get('/', flightController.getAllFlights)
 
-router.get("/detail/:id", flightController.getFlightById);
+router.get('/detail/:id', flightController.getFlightById)
 
 router.patch(
-  "/update/:id",
+  '/update/:id',
   authMiddleware.isAuthorized,
-  flightController.updateFlight
-);
+  flightController.updateFlight,
+)
 
 router.delete(
-  "/delete/:id",
+  '/delete/:id',
   authMiddleware.isAuthorized,
-  flightController.deleteFlight
-);
+  flightController.deleteFlight,
+)
 
-export const flightRoute: Router = router;
+export const flightRoute: Router = router
