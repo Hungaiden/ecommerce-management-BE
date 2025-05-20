@@ -1,4 +1,4 @@
-import mongoose from 'mongoose'
+import mongoose from "mongoose";
 
 const categorySchema = new mongoose.Schema(
   {
@@ -11,8 +11,8 @@ const categorySchema = new mongoose.Schema(
     status: {
       type: String,
       required: true,
-      enum: ['active', 'inactive'],
-      default: 'active',
+      enum: ["active", "inactive"],
+      default: "active",
     },
     position: Number,
     slug: {
@@ -23,25 +23,31 @@ const categorySchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
-    deleted_at: Date,
+    deleted_at: {
+      type: Number,
+    },
   },
   {
     timestamps: {
-      createdAt: 'created_at',
-      updatedAt: 'updated_at',
+      createdAt: "created_at",
+      updatedAt: "updated_at",
     },
-  },
-)
+  }
+);
 
 // Thêm slug từ title trước khi lưu
-categorySchema.pre('save', function(next) {
-  if (this.isModified('title')) {
+categorySchema.pre("save", function (next) {
+  if (this.isModified("title")) {
     this.slug = this.title
       .toLowerCase()
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/(^-|-$)/g, '')
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/(^-|-$)/g, "");
   }
-  next()
-})
+  next();
+});
 
-export const TourCategory = mongoose.model('TourCategory', categorySchema, 'tour_categories')
+export const TourCategory = mongoose.model(
+  "TourCategory",
+  categorySchema,
+  "tour_categories"
+);

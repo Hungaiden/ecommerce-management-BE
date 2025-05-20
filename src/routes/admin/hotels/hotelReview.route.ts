@@ -1,43 +1,38 @@
-import { Router } from "express";
-import upload from "../../../config/multer";
-import { authMiddleware } from "../../../middlewares/auth.middleware";
-import { uploadMultiple } from "../../../middlewares/upload.middleware";
-const router: Router = Router();
+import { Router } from 'express'
+import upload from '../../../config/multer'
+import { authMiddleware } from '../../../middlewares/auth.middleware'
+import { uploadMultiple } from '../../../middlewares/upload.middleware'
+const router: Router = Router()
 
-import * as hotelReviewController from "../../../controllers/admin/hotels/hotelReview.controller";
+import * as hotelReviewController from '../../../controllers/admin/hotels/hotelReview.controller'
 
 router.post(
-  "/create",
-  authMiddleware.isAuthorized,
-  upload.array("images", 5),
+  '/create',
+  upload.array('images', 5),
   uploadMultiple,
-  hotelReviewController.createReview
-);
+  hotelReviewController.createReview,
+)
 
 router.patch(
-  "/approve/:id",
-  authMiddleware.isAuthorized,
-  hotelReviewController.approveReview
-);
+  '/approve/:id',
+  hotelReviewController.approveReview,
+)
 
 router.patch(
-  "/update/:id",
-  authMiddleware.isAuthorized,
-  hotelReviewController.updateReview
-);
+  '/update/:id',
+  hotelReviewController.updateReview,
+)
 
 router.delete(
-  "/delete/:id",
-  authMiddleware.isAuthorized,
-  hotelReviewController.deleteReview
-);
+  '/delete/:id',
+  hotelReviewController.deleteReview,
+)
 
 router.get(
-  "/",
-  authMiddleware.isAuthorized,
-  hotelReviewController.getAllReviews
-);
+  '/',
+  hotelReviewController.getAllReviews,
+)
 
-router.get("/hotel/:hotelId", hotelReviewController.getReviewsByHotelId);
+router.get('/hotel/:hotelId', hotelReviewController.getReviewsByHotelId)
 
-export const hotelReviewRoute: Router = router;
+export const hotelReviewRoute: Router = router

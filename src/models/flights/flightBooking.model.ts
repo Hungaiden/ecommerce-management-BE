@@ -1,30 +1,31 @@
 import mongoose from "mongoose";
 
-const tourBookingSchema = new mongoose.Schema(
+const flightBookingSchema = new mongoose.Schema(
   {
-    tour_id: {
+    flight_id: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Tour",
+      ref: "Flight",
       required: true,
     },
     user_id: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Account",
     },
+    travel_class: {
+      type: String,
+      required: true,
+      ref: "TicketClass",
+    },
     booking_date: {
       type: Number,
       required: true,
       default: () => Date.now(),
     },
-    start_date: {
-      type: Number,
+    seat_number: {
+      type: String,
       required: true,
     },
-    number_of_people: {
-      type: Number,
-      required: true,
-      default: 1,
-    },
+
     contact_info: {
       name: String,
       phone: String,
@@ -32,7 +33,6 @@ const tourBookingSchema = new mongoose.Schema(
     },
     note: String,
 
-    // Trạng thái xử lý booking
     status: {
       type: String,
       required: true,
@@ -45,7 +45,6 @@ const tourBookingSchema = new mongoose.Schema(
       required: true,
     },
 
-    // Trạng thái thanh toán (bắt buộc nếu có cổng thanh toán)
     payment_status: {
       type: String,
       required: true,
@@ -53,29 +52,24 @@ const tourBookingSchema = new mongoose.Schema(
       default: "pending",
     },
 
-    // Thêm phương thức thanh toán
     payment_method: {
       type: String,
-      enum: ["vnpay", "momo", "cash"],
+      enum: ["vnpay", "momo", "cash", "paypal", "credit_card"],
       default: "vnpay",
-    }, // => Cho biết khách chọn thanh toán qua đâu
+    },
 
-    // Mã giao dịch từ cổng thanh toán (ví dụ từ VNPAY: vnp_TxnRef)
     transaction_code: {
       type: String,
     },
 
-    // Thời điểm thanh toán thành công (ghi log)
     payment_time: {
       type: Number,
     },
 
-    //  Mã phản hồi từ cổng thanh toán (VNPAY: "00" = thành công)
     vnp_response_code: {
       type: String,
     },
 
-    // (Optional) lưu lại link thanh toán redirect (dùng cho debug hoặc redirect lại client)
     payment_url: {
       type: String,
     },
@@ -96,8 +90,8 @@ const tourBookingSchema = new mongoose.Schema(
   }
 );
 
-export const TourBooking = mongoose.model(
-  "TourBooking",
-  tourBookingSchema,
-  "tour_bookings"
+export const FlightBooking = mongoose.model(
+  "FlightBooking",
+  flightBookingSchema,
+  "flight_bookings"
 );

@@ -11,7 +11,6 @@ import * as tourReviewController from '../../../controllers/admin/tours/tourRevi
 
 router.post(
   '/create',
-  authMiddleware.isAuthorized,
   upload.array('images', 5),
   uploadMultiple,
   tourReviewController.createReview,
@@ -25,13 +24,11 @@ router.patch(
 
 router.patch(
   '/update/:id',
-  authMiddleware.isAuthorized,
   tourReviewController.updateReview,
 )
 
 router.delete(
   '/delete/:id',
-  authMiddleware.isAuthorized,
   tourReviewController.deleteReview,
 )
 

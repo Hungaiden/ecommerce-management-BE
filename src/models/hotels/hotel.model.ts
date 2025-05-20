@@ -24,8 +24,15 @@ const hotelSchema = new mongoose.Schema(
     total_rooms: { type: Number, required: true },
     phone: { type: String },
     email: { type: String },
-    check_in_time: { type: String, default: '14:00' },
-    check_out_time: { type: String, default: '12:00' },
+    check_in_time: {
+      type: Number,
+      default: () => new Date('1970-01-01T14:00:00Z').getTime(),
+    },
+    check_out_time: {
+      type: Number,
+      default: () => new Date('1970-01-01T12:00:00Z').getTime(),
+    },
+
     average_rating: {
       type: Number,
       default: 0,

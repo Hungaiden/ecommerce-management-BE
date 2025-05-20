@@ -25,4 +25,4 @@ const roomTypeSchema = new mongoose.Schema(
   },
 )
 
-export const RoomType = mongoose.model('RoomType', roomTypeSchema, 'room_types')
+export const RoomType = mongoose.model('RoomType', roomTypeSchema, 'hotel_room_types')
