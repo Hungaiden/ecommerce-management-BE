@@ -11,6 +11,7 @@ import * as tourReviewController from '../../../controllers/admin/tours/tourRevi
 
 router.post(
   '/create',
+  authMiddleware.isAuthorized,
   upload.array('images', 5),
   uploadMultiple,
   tourReviewController.createReview,

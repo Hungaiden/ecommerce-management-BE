@@ -8,6 +8,7 @@ import * as hotelReviewController from '../../../controllers/admin/hotels/hotelR
 
 router.post(
   '/create',
+  authMiddleware.isAuthorized,
   upload.array('images', 5),
   uploadMultiple,
   hotelReviewController.createReview,
