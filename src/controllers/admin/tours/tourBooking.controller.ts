@@ -6,13 +6,22 @@ import type {
   ResponseListSuccess,
   ResponseFailure,
 } from '../../../utils/types/ResponseTypes'
-
+import { sendBookingEmail } from '../../../providers/sendMail'
 export const createTourBooking = async (req: Request, res: Response) => {
   try {
     const booking = await tourBookingService.createTourBooking({
       ...req.body,
     })
-
+    await sendBookingEmail({
+      userEmail: req.body.contact_info.email, // hoặc booking.email nếu đã lưu vào DB
+      bookingType: 'tour',
+      data: {
+        // title: booking.tour_id.title,
+        start_date: booking.start_date,
+        number_of_people: booking.number_of_people,
+        total_price: booking.total_price,
+      }
+    });
     const response: ResponseDetailSuccess<typeof booking> = {
       code: 201,
       message: 'Đặt tour thành công',

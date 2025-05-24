@@ -31,8 +31,8 @@ export const createTourBooking = async (data: CreateTourBookingDto) => {
     await Tour.findByIdAndUpdate(data.tour_id, {
       $inc: { stock: -data.number_of_people },
     })
-
-    return newBooking
+    const populatedBooking = await newBooking.populate('tour_id', 'title')
+    return populatedBooking
   } catch (error) {
     throw error
   }

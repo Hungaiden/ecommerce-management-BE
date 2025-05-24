@@ -1,23 +1,40 @@
 import { Tour } from '../../../models/tours/tour.model'
 import { TourCategory } from '../../../models/tours/tourCategory.model'
-import type { CreateTourDto } from '../../../dto/tours/create.tour.dto'
+import type { CreateTourDto, TourStatus } from '../../../dto/tours/create.tour.dto'
 import type { UpdateTourDto } from '../../../dto/tours/update.tour.dto'
 import * as paramsTypes from '../../../utils/types/paramsTypes'
-import { TourReview } from '../../../models/tours/tourReview.model'
 import mongoose from 'mongoose'
 
 // Hàm tạo Tour
-export const createTour = async (data: CreateTourDto) => {
+export const createTour = async (raw: any) => {
+  // Ép kiểu dữ liệu đúng theo CreateTourDto
+  const data: CreateTourDto = {
+    title: raw.title,
+    code: raw.code,
+    category_id: raw.category_id || undefined,
+    images: raw.imagesPath, // Nếu bạn xử lý file trả về path
+    price: raw.price ? Number(raw.price) : undefined,
+    discount: raw.discount ? Number(raw.discount) : undefined,
+    information: raw.information || undefined,
+    schedule: raw.schedule || undefined,
+    duration_days: raw.duration_days ? Number(raw.duration_days) : undefined,
+    time_start: raw.time_start ? new Date(raw.time_start) : undefined,
+    time_end: raw.time_end ? new Date(raw.time_end) : undefined,
+    stock: raw.stock ? Number(raw.stock) : undefined,
+    status: raw.status as TourStatus,
+    position: raw.position ? Number(raw.position) : undefined,
+  };
+
   // Kiểm tra nếu code đã tồn tại
-  const existingTour = await Tour.findOne({ code: data.code })
+  const existingTour = await Tour.findOne({ code: data.code });
   if (existingTour) {
-    throw new Error('Tour code đã tồn tại!')
+    throw new Error('Tour code đã tồn tại!');
   }
 
   // Tạo tour mới
-  const newTour = new Tour(data)
-  await newTour.save()
-  return newTour
+  const newTour = new Tour(data);
+  await newTour.save();
+  return newTour;
 }
 
 // Hàm lấy tất cả Tour
@@ -60,6 +77,7 @@ export const getAllTours = async (
       .skip(offset) // Bỏ qua số lượng bản ghi dựa trên offset
       .limit(limit) // Giới hạn số bản ghi trả về
       .sort(sortQuery) // Sắp xếp theo sortQuery
+      .populate('category_id')
       .lean() // Chuyển đổi kết quả thành đối tượng JavaScript thuần túy
     const totalRows = await Tour.countDocuments(query) // Đếm tổng số bản ghi
     const totalPages = Math.ceil(totalRows / limit) // Tính tổng số trang
@@ -106,8 +124,24 @@ export const getTourByIdService = async (id: string) => {
 }
 
 // Hàm cập nhật Tour
-export const updateTour = async (id: string, data: UpdateTourDto) => {
+export const updateTour = async (id: string, raw: any) => {
   try {
+    const data: Partial<UpdateTourDto> = {
+      title: raw.title,
+      code: raw.code,
+      category_id: raw.category_id || undefined,
+      images: raw.imagesPath || undefined, // Nếu bạn xử lý file trả về path
+      price: raw.price ? Number(raw.price) : undefined,
+      discount: raw.discount ? Number(raw.discount) : undefined,
+      information: raw.information || undefined,
+      schedule: raw.schedule || undefined,
+      time_start: raw.time_start ? new Date(raw.time_start) : undefined,
+      time_end: raw.time_end ? new Date(raw.time_end) : undefined,
+      stock: raw.stock ? Number(raw.stock) : undefined,
+      status: raw.status as TourStatus || undefined,
+      position: raw.position ? Number(raw.position) : undefined,
+    }
+
     const updatedTour = await Tour.findOneAndUpdate(
       { _id: id, deleted: false },
       data,
