@@ -73,6 +73,7 @@ export const refreshToken = async (req: Request, res: Response) => {
     const refreshTokenFromCookie = req.cookies?.refreshToken
     const accessToken = await authService.refreshToken(refreshTokenFromCookie)
 
+    
     res.cookie('accessToken', accessToken, {
       httpOnly: true,
       secure: true,

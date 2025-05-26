@@ -1,94 +1,110 @@
-import { TourCategory } from '../../../models/tours/tourCategory.model'
-import type { CreateTourCategoryDto } from '../../../dto/tours/create.tourCategory.dto'
-import type { UpdateTourCategoryDto } from '../../../dto/tours/update.tourCategory.dto'
-import * as paramsTypes from '../../../utils/types/paramsTypes'
+import { TourCategory } from "../../../models/tours/tourCategory.model";
+import type { CreateTourCategoryDto } from "../../../dto/tours/create.tourCategory.dto";
+import type { UpdateTourCategoryDto } from "../../../dto/tours/update.tourCategory.dto";
+import * as paramsTypes from "../../../utils/types/paramsTypes";
+import {
+  CreateTourCategorySchema,
+  UpdateTourCategorySchema,
+} from "../../../validations/tours/tourSchema.zod";
 
-export const createTourCategory = async (data: CreateTourCategoryDto) => {
-  const existingCategory = await TourCategory.findOne({ title: data.title })
+export const createTourCategory = async (raw: any) => {
+  // Validate dữ liệu đầu vào
+  const parseResult = CreateTourCategorySchema.safeParse(raw);
+  if (!parseResult.success) {
+    const error = parseResult.error.flatten();
+    throw new Error(error.formErrors.join(", ") || "Invalid category data");
+  }
+  const data = parseResult.data;
+
+  const existingCategory = await TourCategory.findOne({ title: data.title });
   if (existingCategory) {
-    throw new Error('Tour category title đã tồn tại!')
+    throw new Error("Tour category title đã tồn tại!");
   }
 
-  const newCategory = new TourCategory(data)
-  await newCategory.save()
-  return newCategory
-}
+  const newCategory = new TourCategory(data);
+  await newCategory.save();
+  return newCategory;
+};
 
 export const getAllTourCategories = async (
   searchParams?: paramsTypes.SearchParams,
   sortParams?: paramsTypes.SortParams,
-  paginateParams?: paramsTypes.PaginateParams,
+  paginateParams?: paramsTypes.PaginateParams
 ) => {
   try {
-    const query: any = { deleted: false }
+    const query: any = { deleted: false };
 
     if (searchParams?.keyword && searchParams?.field) {
       query[searchParams.field] = {
         $regex: searchParams.keyword,
-        $options: 'i',
-      }
+        $options: "i",
+      };
     }
 
-    const offset = paginateParams?.offset || 0
-    const limit = paginateParams?.limit || 10
+    const offset = paginateParams?.offset || 0;
+    const limit = paginateParams?.limit || 10;
 
-    const sortQuery: any = {}
+    const sortQuery: any = {};
     if (sortParams?.sortBy) {
       sortQuery[sortParams.sortBy] =
-        sortParams.sortType === paramsTypes.SORT_TYPE.ASC ? 1 : -1
+        sortParams.sortType === paramsTypes.SORT_TYPE.ASC ? 1 : -1;
     }
 
     const categories = await TourCategory.find(query)
       .skip(offset)
       .limit(limit)
       .sort(sortQuery)
-      .lean()
+      .lean();
 
-    const totalRows = await TourCategory.countDocuments(query)
-    const totalPages = Math.ceil(totalRows / limit)
-    return { categories, totalRows, totalPages }
+    const totalRows = await TourCategory.countDocuments(query);
+    const totalPages = Math.ceil(totalRows / limit);
+    return { categories, totalRows, totalPages };
   } catch (error) {
-    throw new Error('Lỗi khi lấy danh sách category!')
+    throw new Error("Lỗi khi lấy danh sách category!");
   }
-}
+};
 
 export const getTourCategoryById = async (id: string) => {
   try {
     const category = await TourCategory.findOne({
       _id: id,
       deleted: false,
-    })
-    return category
+    });
+    return category;
   } catch (error) {
-    throw new Error('Lỗi khi lấy thông tin category!')
+    throw new Error("Lỗi khi lấy thông tin category!");
   }
-}
+};
 
-export const updateTourCategory = async (
-  id: string,
-  data: UpdateTourCategoryDto,
-) => {
+export const updateTourCategory = async (id: string, raw: any) => {
+  // Validate dữ liệu đầu vào
+  const parseResult = UpdateTourCategorySchema.safeParse({ _id: id, ...raw });
+  if (!parseResult.success) {
+    const error = parseResult.error.flatten();
+    throw new Error(error.formErrors.join(", ") || "Invalid category data");
+  }
+  const data = parseResult.data;
   try {
     const updatedCategory = await TourCategory.findOneAndUpdate(
       { _id: id, deleted: false },
       data,
-      { new: true },
-    )
-    return updatedCategory
+      { new: true }
+    );
+    return updatedCategory;
   } catch (error) {
-    throw new Error('Lỗi khi cập nhật category!')
+    throw new Error("Lỗi khi cập nhật category!");
   }
-}
+};
 
 export const deleteTourCategory = async (id: string) => {
   try {
     const deletedCategory = await TourCategory.findOneAndUpdate(
       { _id: id, deleted: false },
       { deleted: true, deleted_at: new Date() },
-      { new: true },
-    )
-    return deletedCategory
+      { new: true }
+    );
+    return deletedCategory;
   } catch (error) {
-    throw new Error('Lỗi khi xóa category!')
+    throw new Error("Lỗi khi xóa category!");
   }
-}
+};

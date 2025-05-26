@@ -1,30 +1,22 @@
 import { Tour } from '../../../models/tours/tour.model'
 import { TourCategory } from '../../../models/tours/tourCategory.model'
-import type { CreateTourDto, TourStatus } from '../../../dto/tours/create.tour.dto'
+import { CreateTourSchema, UpdateTourSchema} from '../../../validations/tours/tourSchema.zod'
 import type { UpdateTourDto } from '../../../dto/tours/update.tour.dto'
 import * as paramsTypes from '../../../utils/types/paramsTypes'
 import mongoose from 'mongoose'
 
 // Hàm tạo Tour
 export const createTour = async (raw: any) => {
+  
   // Ép kiểu dữ liệu đúng theo CreateTourDto
-  const data: CreateTourDto = {
-    title: raw.title,
-    code: raw.code,
-    category_id: raw.category_id || undefined,
-    images: raw.imagesPath, // Nếu bạn xử lý file trả về path
-    price: raw.price ? Number(raw.price) : undefined,
-    discount: raw.discount ? Number(raw.discount) : undefined,
-    information: raw.information || undefined,
-    schedule: raw.schedule || undefined,
-    duration_days: raw.duration_days ? Number(raw.duration_days) : undefined,
-    time_start: raw.time_start ? new Date(raw.time_start) : undefined,
-    time_end: raw.time_end ? new Date(raw.time_end) : undefined,
-    stock: raw.stock ? Number(raw.stock) : undefined,
-    status: raw.status as TourStatus,
-    position: raw.position ? Number(raw.position) : undefined,
-  };
+  const result = CreateTourSchema.safeParse(raw);
+  if (!result.success) {
+    // Trả lỗi rõ ràng
+    throw new Error(JSON.stringify(result.error.format()));
+  }
 
+  const data = result.data;
+  
   // Kiểm tra nếu code đã tồn tại
   const existingTour = await Tour.findOne({ code: data.code });
   if (existingTour) {
@@ -33,6 +25,7 @@ export const createTour = async (raw: any) => {
 
   // Tạo tour mới
   const newTour = new Tour(data);
+  
   await newTour.save();
   return newTour;
 }
@@ -126,22 +119,13 @@ export const getTourByIdService = async (id: string) => {
 // Hàm cập nhật Tour
 export const updateTour = async (id: string, raw: any) => {
   try {
-    const data: Partial<UpdateTourDto> = {
-      title: raw.title,
-      code: raw.code,
-      category_id: raw.category_id || undefined,
-      images: raw.imagesPath || undefined, // Nếu bạn xử lý file trả về path
-      price: raw.price ? Number(raw.price) : undefined,
-      discount: raw.discount ? Number(raw.discount) : undefined,
-      information: raw.information || undefined,
-      schedule: raw.schedule || undefined,
-      time_start: raw.time_start ? new Date(raw.time_start) : undefined,
-      time_end: raw.time_end ? new Date(raw.time_end) : undefined,
-      stock: raw.stock ? Number(raw.stock) : undefined,
-      status: raw.status as TourStatus || undefined,
-      position: raw.position ? Number(raw.position) : undefined,
+    const result = UpdateTourSchema.safeParse({ _id: id, ...raw });
+
+    if (!result.success) {
+      throw new Error(JSON.stringify(result.error.format()));
     }
 
+    const data = result.data;
     const updatedTour = await Tour.findOneAndUpdate(
       { _id: id, deleted: false },
       data,

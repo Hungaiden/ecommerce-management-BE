@@ -1,5 +1,4 @@
 import { Router } from 'express'
-import multer from 'multer'
 import upload from '../../../config/multer'
 import { authMiddleware } from '../../../middlewares/auth.middleware'
 import { uploadSingle, uploadMultiple } from '../../../middlewares/upload.middleware'

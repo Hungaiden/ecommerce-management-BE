@@ -14,6 +14,9 @@ export type TourFilterParams = {
   duration_days?: number;
 };
 
+// export type TourFilterParams2 = {
+//   { name: string; value: string }
+// }
 export type HotelFilterParams = {
   status?: string;
   minPrice?: number;

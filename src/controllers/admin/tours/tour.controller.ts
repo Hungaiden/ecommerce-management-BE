@@ -9,6 +9,7 @@ import type {
 import { TourStatus } from '../../../dto/tours/create.tour.dto'
 export const createPost = async (req: Request, res: Response) => {
   try {
+    
     const tour = await tourService.createTour(req.body)
     const response: ResponseDetailSuccess<typeof tour> = {
       code: 201,
