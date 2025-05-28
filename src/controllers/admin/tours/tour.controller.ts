@@ -35,8 +35,11 @@ export const getAllTours = async (req: Request, res: Response) => {
       status: req.query.status as string,
       minPrice: req.query.minPrice ? Number(req.query.minPrice) : undefined,
       maxPrice: req.query.maxPrice ? Number(req.query.maxPrice) : undefined,
+      tourCategory: req.query.tourCategory as string,
+      duration_days: req.query.duration_days ? Number(req.query.duration_days) : undefined,
     }
-
+    
+    
     const searchParams: paramsTypes.SearchParams = {
       keyword: req.query.keyword as string,
       field: req.query.field as string,

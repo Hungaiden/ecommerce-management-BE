@@ -43,9 +43,10 @@ export const getAllTours = async (
     if (filter.status) query.status = filter.status
     if (filter.minPrice) query.price = { $gte: filter.minPrice }
     if (filter.maxPrice) query.price = { $lte: filter.maxPrice }
-    if (filter.tourCategory) query.tourCategory = filter.tourCategory
+    if (filter.tourCategory) query.category_id = new mongoose.Types.ObjectId(filter.tourCategory);
     if (filter.duration_days) query.duration_days = filter.duration_days
 
+    
     // Tìm kiếm theo từ khóa
     if (searchParams?.keyword && searchParams?.field) {
       query[searchParams.field] = {
@@ -64,15 +65,18 @@ export const getAllTours = async (
       sortQuery[sortParams.sortBy] =
         sortParams.sortType === paramsTypes.SORT_TYPE.ASC ? 1 : -1
     }
-
+    const totalRows = await Tour.countDocuments(query) // Đếm tổng số bản ghi
+    const safeOffset = offset > totalRows ? 0 : offset;
     // Truy vấn MongoDB
     const tours = await Tour.find(query)
-      .skip(offset) // Bỏ qua số lượng bản ghi dựa trên offset
+      .skip(safeOffset) // Bỏ qua số lượng bản ghi dựa trên offset
       .limit(limit) // Giới hạn số bản ghi trả về
       .sort(sortQuery) // Sắp xếp theo sortQuery
       .populate('category_id')
       .lean() // Chuyển đổi kết quả thành đối tượng JavaScript thuần túy
-    const totalRows = await Tour.countDocuments(query) // Đếm tổng số bản ghi
+    // console.log(tours)
+    
+    
     const totalPages = Math.ceil(totalRows / limit) // Tính tổng số trang
 
     return { tours, totalRows, totalPages }
