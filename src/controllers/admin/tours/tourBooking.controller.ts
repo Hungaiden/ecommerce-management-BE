@@ -12,11 +12,12 @@ export const createTourBooking = async (req: Request, res: Response) => {
     const booking = await tourBookingService.createTourBooking({
       ...req.body,
     })
+    
     await sendBookingEmail({
       userEmail: req.body.contact_info.email, // hoặc booking.email nếu đã lưu vào DB
       bookingType: 'tour',
       data: {
-        // title: booking.tour_id.title,
+        title: (booking.tour_id as any).title,
         start_date: booking.start_date,
         number_of_people: booking.number_of_people,
         total_price: booking.total_price,
