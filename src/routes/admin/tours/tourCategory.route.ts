@@ -11,8 +11,6 @@ router.get('/', tourCategoryController.getAllCategories)
 router.post(
   '/create',
   authMiddleware.isAuthorized,
-  upload.array('images', 5),
-  uploadSingle,
   tourCategoryController.createCategory,
 )
 

@@ -16,7 +16,7 @@ export const login = async (req: Request, res: Response) => {
       email,
       password,
     )
-
+    
     res.cookie('accessToken', accessToken, {
       httpOnly: true,
       secure: true,
@@ -72,7 +72,6 @@ export const refreshToken = async (req: Request, res: Response) => {
   try {
     const refreshTokenFromCookie = req.cookies?.refreshToken
     const accessToken = await authService.refreshToken(refreshTokenFromCookie)
-
     
     res.cookie('accessToken', accessToken, {
       httpOnly: true,

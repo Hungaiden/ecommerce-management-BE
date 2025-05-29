@@ -1,10 +1,7 @@
 import { Router } from 'express'
 import upload from '../../../config/multer'
 import { authMiddleware } from '../../../middlewares/auth.middleware'
-import {
-  uploadSingle,
-  uploadMultiple,
-} from '../../../middlewares/upload.middleware'
+
 const router: Router = Router()
 
 import * as tourReviewController from '../../../controllers/admin/tours/tourReview.controller'
@@ -12,8 +9,6 @@ import * as tourReviewController from '../../../controllers/admin/tours/tourRevi
 router.post(
   '/create',
   authMiddleware.isAuthorized,
-  upload.array('images', 5),
-  uploadMultiple,
   tourReviewController.createReview,
 )
 

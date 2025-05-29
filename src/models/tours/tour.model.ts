@@ -40,6 +40,10 @@ const tourSchema = new mongoose.Schema(
       default: 'active',
     },
     position: Number,
+    is_featured: {
+      type: Boolean,
+      default: false,
+    },
     slug: {
       type: String,
       unique: true,

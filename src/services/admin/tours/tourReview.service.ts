@@ -1,7 +1,7 @@
 import { TourReview } from '../../../models/tours/tourReview.model'
 import { Tour } from '../../../models/tours/tour.model'
 import type { CreateReviewDto } from '../../../dto/tours/create.review.dto'
-import { CreateReviewSchema } from '../../../validations/tours/tourSchema.zod'
+import { CreateTourReviewSchema } from '../../../validations/tours/tourSchema.zod'
 import * as paramsTypes from '../../../utils/types/paramsTypes'
 const calculateAverageRating = async (tourId: string) => {
   const result = await TourReview.aggregate([
@@ -29,7 +29,7 @@ const calculateAverageRating = async (tourId: string) => {
 }
 
 export const createReview = async (raw: any) => {
-  const parseResult = CreateReviewSchema.safeParse(raw)
+  const parseResult = CreateTourReviewSchema.safeParse(raw)
   if (!parseResult.success) {
     const error = parseResult.error.flatten()
     throw new Error(error.formErrors.join(', ') || 'Invalid review data')
