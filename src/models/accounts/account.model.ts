@@ -11,8 +11,8 @@ const accountSchema = new mongoose.Schema(
     role_id: { type: String, required: true },
     status: { 
       type: String, 
-      enum: ['Active', 'Inactive', 'Suspended'], 
-      default: 'Active', 
+      enum: ['active', 'inactive', 'suspended'], 
+      default: 'active', 
       required: true, 
     },
     deleted: { 

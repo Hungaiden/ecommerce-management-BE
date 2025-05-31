@@ -3,88 +3,87 @@ import moment from "moment";
 import crypto from "crypto";
 import { sortObject } from "../../utils/sortObject";
 import qs from "qs";
-
+import { TourBooking } from "../../models/tours/tourBooking.model";
 interface CreatePaymentRequestBody {
   bookingId: string;
   amount: number;
   bankCode?: string;
   language?: string;
 }
-export const createPaymentUrl = (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+export const createPaymentUrl = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    process.env.TZ = "Asia/Ho_Chi_Minh";
-    const date = new Date();
-    const createDate = moment(date).format("YYYYMMDDHHmmss");
-    const orderId = moment(date).format("DDHHmmss");
+    const { bookingId } = req.params;
+    console.log('📌 bookingId:', bookingId);
 
-    // Lấy bookingId từ params
-    const bookingId = req.params.bookingId;
-    if (!bookingId) {
-      res.status(400).json({ message: "Missing bookingId in params" });
+    if (!bookingId || typeof bookingId !== 'string') {
+      res.status(400).json({ message: 'Missing or invalid bookingId' });
       return;
     }
-    const ipAddr =
-      req.headers["x-forwarded-for"] ||
-      req.socket.remoteAddress ||
-      req.connection.remoteAddress ||
-      "";
 
-    const tmnCode = process.env.VNP_TMN_CODE || "";
-    const secretKey = process.env.VNP_HASH_SECRET || "";
-    let vnpUrl = process.env.VNP_URL || "";
-    const returnUrl = process.env.VNP_RETURN_URL || "";
+    const booking = await TourBooking.findById(bookingId);
 
-    const amount = Number(req.body.amount); // e.g. 100000
-    const bankCode = req.body.bankCode as string;
-    const locale = req.body.language || "vn";
+    if (!booking) {
+      res.status(404).json({ message: 'Booking not found' });
+      return;
+    }
+
+    if (booking.payment_status === 'paid') {
+      res.status(400).json({ message: 'Booking already paid' });
+      return;
+    }
+
+    const amount = booking.total_price;
+    const ipAddr = '127.0.0.1';
+    
+
+    const tmnCode = process.env.VNP_TMN_CODE!;
+    const secretKey = process.env.VNP_HASH_SECRET!;
+    const vnpUrl = process.env.VNP_URL!;
+    const returnUrl = process.env.VNP_RETURN_URL!;
+
+    const createDate = moment().format('YYYYMMDDHHmmss');
+    const orderInfo = `Thanh toan booking ${bookingId}`;
 
     const vnp_Params: { [key: string]: string } = {
-      vnp_Version: "2.1.0",
-      vnp_Command: "pay",
+      vnp_Version: '2.1.0',
+      vnp_Command: 'pay',
       vnp_TmnCode: tmnCode,
-      vnp_Locale: locale,
-      vnp_CurrCode: "VND",
+      vnp_Locale: 'vn',
+      vnp_CurrCode: 'VND',
       vnp_TxnRef: bookingId,
-      vnp_OrderInfo: `Thanh toan don hang ${orderId}`,
-      vnp_OrderType: "other",
-      vnp_Amount: (amount * 100).toString(),
+      vnp_OrderInfo: orderInfo,
+      vnp_OrderType: 'other',
+      vnp_Amount: (amount * 100).toString(), // VNPAY yêu cầu x100
       vnp_ReturnUrl: returnUrl,
-      vnp_IpAddr: ipAddr.toString(),
+      vnp_IpAddr: ipAddr as string,
       vnp_CreateDate: createDate,
     };
 
-    if (bankCode) {
-      vnp_Params["vnp_BankCode"] = bankCode;
-    }
-
-    // 🔒 Không thêm SecureHash vào đây
     const sortedParams = sortObject(vnp_Params);
     const signData = qs.stringify(sortedParams, { encode: false });
 
-    const hmac = crypto.createHmac("sha512", secretKey);
-    const signed = hmac.update(Buffer.from(signData, "utf-8")).digest("hex");
+    const hmac = crypto.createHmac('sha512', secretKey);
+    const signed = hmac.update(Buffer.from(signData, 'utf-8')).digest('hex');
 
-    // 🔐 Bây giờ mới thêm SecureHash
-    sortedParams["vnp_SecureHash"] = signed;
+    sortedParams.vnp_SecureHash = signed;
 
-    // Tạo URL
-    vnpUrl += "?" + qs.stringify(sortedParams, { encode: false });
+    const paymentUrl = `${vnpUrl}?${qs.stringify(sortedParams, { encode: false })}`;
 
-    console.log("signData:", signData);
-    console.log("signed:", signed);
-    console.log("secureHash from VNPay:", sortedParams["vnp_SecureHash"]);
+    console.log('🔍 SignData:', signData);
+    console.log('✅ SecureHash:', signed);
+
+    // Save to DB (optional for debug/reference)
+    booking.payment_url = paymentUrl;
+    await booking.save();
 
     res.status(200).json({
-      code: "00",
-      message: "success",
-      paymentUrl: vnpUrl,
+      message: 'Successfully created payment URL',
+      paymentUrl,
     });
+    return;
   } catch (error) {
     next(error);
+    return;
   }
 };
 export const vnpayReturn = async (
