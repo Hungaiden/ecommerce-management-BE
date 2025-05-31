@@ -21,8 +21,8 @@ export const createTourBooking = async (req: Request, res: Response) => {
         start_date: booking.start_date,
         number_of_people: booking.number_of_people,
         total_price: booking.total_price,
-      }
-    });
+      },
+    })
     const response: ResponseDetailSuccess<typeof booking> = {
       code: 201,
       message: 'Đặt tour thành công',

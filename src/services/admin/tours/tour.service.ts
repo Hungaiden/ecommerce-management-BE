@@ -1,6 +1,6 @@
 import { Tour } from '../../../models/tours/tour.model'
 import { TourCategory } from '../../../models/tours/tourCategory.model'
-import { CreateTourSchema, UpdateTourSchema} from '../../../validations/tours/tourSchema.zod'
+import { CreateTourSchema, UpdateTourSchema } from '../../../validations/tours/tourSchema.zod'
 import type { UpdateTourDto } from '../../../dto/tours/update.tour.dto'
 import * as paramsTypes from '../../../utils/types/paramsTypes'
 import mongoose from 'mongoose'
@@ -9,25 +9,25 @@ import mongoose from 'mongoose'
 export const createTour = async (raw: any) => {
   
   // Ép kiểu dữ liệu đúng theo CreateTourDto
-  const result = CreateTourSchema.safeParse(raw);
+  const result = CreateTourSchema.safeParse(raw)
   if (!result.success) {
     // Trả lỗi rõ ràng
-    throw new Error(JSON.stringify(result.error.format()));
+    throw new Error(JSON.stringify(result.error.format()))
   }
 
-  const data = result.data;
+  const data = result.data
   
   // Kiểm tra nếu code đã tồn tại
-  const existingTour = await Tour.findOne({ code: data.code });
+  const existingTour = await Tour.findOne({ code: data.code })
   if (existingTour) {
-    throw new Error('Tour code đã tồn tại!');
+    throw new Error('Tour code đã tồn tại!')
   }
 
   // Tạo tour mới
-  const newTour = new Tour(data);
+  const newTour = new Tour(data)
   
-  await newTour.save();
-  return newTour;
+  await newTour.save()
+  return newTour
 }
 
 // Hàm lấy tất cả Tour
@@ -43,7 +43,7 @@ export const getAllTours = async (
     if (filter.status) query.status = filter.status
     if (filter.minPrice) query.price = { $gte: filter.minPrice }
     if (filter.maxPrice) query.price = { $lte: filter.maxPrice }
-    if (filter.tourCategory) query.category_id = new mongoose.Types.ObjectId(filter.tourCategory);
+    if (filter.tourCategory) query.category_id = new mongoose.Types.ObjectId(filter.tourCategory)
     if (filter.duration_days) query.duration_days = filter.duration_days
 
     
@@ -66,7 +66,7 @@ export const getAllTours = async (
         sortParams.sortType === paramsTypes.SORT_TYPE.ASC ? 1 : -1
     }
     const totalRows = await Tour.countDocuments(query) // Đếm tổng số bản ghi
-    const safeOffset = offset > totalRows ? 0 : offset;
+    const safeOffset = offset > totalRows ? 0 : offset
     // Truy vấn MongoDB
     const tours = await Tour.find(query)
       .skip(safeOffset) // Bỏ qua số lượng bản ghi dựa trên offset
@@ -123,13 +123,13 @@ export const getTourByIdService = async (id: string) => {
 // Hàm cập nhật Tour
 export const updateTour = async (id: string, raw: any) => {
   try {
-    const result = UpdateTourSchema.safeParse({ _id: id, ...raw });
+    const result = UpdateTourSchema.safeParse({ _id: id, ...raw })
 
     if (!result.success) {
-      throw new Error(JSON.stringify(result.error.format()));
+      throw new Error(JSON.stringify(result.error.format()))
     }
 
-    const data = result.data;
+    const data = result.data
     const updatedTour = await Tour.findOneAndUpdate(
       { _id: id, deleted: false },
       data,

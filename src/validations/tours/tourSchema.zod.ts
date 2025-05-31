@@ -1,20 +1,20 @@
-import { z } from "zod";
+import { z } from 'zod'
 
-const TransportationEnum = z.enum(['bus', 'train', 'airplane', 'boat']);
-const TourStatusEnum = z.enum(['active', 'inactive', 'pending']);
+const TransportationEnum = z.enum(['bus', 'train', 'airplane', 'boat'])
+const TourStatusEnum = z.enum(['active', 'inactive', 'pending'])
 
 export const CreateTourSchema = z.object({
-  title: z.string().min(1, "Title is required"),
+  title: z.string().min(1, 'Title is required'),
 
-  code: z.string().min(1, "Code is required"),
+  code: z.string().min(1, 'Code is required'),
 
-  category_id: z.string().min(1, "Category is required"), // ObjectId dưới dạng string
+  category_id: z.string().min(1, 'Category is required'), // ObjectId dưới dạng string
 
   images: z
-    .array(z.string().url({ message: "Each image must be a valid URL" }))
+    .array(z.string().url({ message: 'Each image must be a valid URL' }))
     .optional(),
 
-  price: z.number({ required_error: "Price is required" }).min(0, "Price must be non-negative"),
+  price: z.number({ required_error: 'Price is required' }).min(0, 'Price must be non-negative'),
 
   discount: z.number().min(0).optional(),
 
@@ -23,10 +23,10 @@ export const CreateTourSchema = z.object({
   schedule: z.string().optional(),
 
   duration_days: z
-    .number({ required_error: "Duration is required" })
-    .min(1, "Must be at least 1 day"),
+    .number({ required_error: 'Duration is required' })
+    .min(1, 'Must be at least 1 day'),
 
-  stock: z.number().int().min(0, "Stock must be non-negative").optional(),
+  stock: z.number().int().min(0, 'Stock must be non-negative').optional(),
 
   transportation: TransportationEnum.optional(),
 
@@ -39,7 +39,7 @@ export const CreateTourSchema = z.object({
 
 
 export const UpdateTourSchema = z.object({
-  _id: z.string().min(1, "ID is required"),
+  _id: z.string().min(1, 'ID is required'),
 
   title: z.string().min(1).optional(),
 
@@ -48,7 +48,7 @@ export const UpdateTourSchema = z.object({
   category_id: z.string().min(1).optional(),
 
   images: z
-    .array(z.string().url({ message: "Each image must be a valid URL" }))
+    .array(z.string().url({ message: 'Each image must be a valid URL' }))
     .optional(),
 
   price: z.number().min(0).optional(),
@@ -62,7 +62,7 @@ export const UpdateTourSchema = z.object({
   time_start: z
     .string()
     .refine((val) => !isNaN(Date.parse(val)), {
-      message: "Invalid date format",
+      message: 'Invalid date format',
     })
     .transform((val) => new Date(val))
     .optional(),
@@ -70,7 +70,7 @@ export const UpdateTourSchema = z.object({
   time_end: z
     .string()
     .refine((val) => !isNaN(Date.parse(val)), {
-      message: "Invalid date format",
+      message: 'Invalid date format',
     })
     .transform((val) => new Date(val))
     .optional(),
@@ -84,7 +84,7 @@ export const UpdateTourSchema = z.object({
   status: TourStatusEnum.optional(),
 
   is_featured: z.boolean().optional(),
-});
+})
 
 export const CreateTourBookingSchema = z.object({
   tour_id: z.string().min(1, 'tour_id is required'),
@@ -131,7 +131,7 @@ export const CreateTourBookingSchema = z.object({
   vnp_response_code: z.string().optional(),
 
   payment_url: z.string().url().optional(),
-});
+})
 
 export const CreateTourCategorySchema = z.object({
   title: z.string().min(1, 'Title is required'),
@@ -143,7 +143,7 @@ export const CreateTourCategorySchema = z.object({
   status: z.enum(['active', 'inactive']).default('active'),
 
   position: z.number().optional(),
-});
+})
 
 export const UpdateTourCategorySchema = z.object({
   _id: z.string().min(1, 'ID is required'), // ID là bắt buộc để xác định bản ghi cần update
@@ -157,7 +157,7 @@ export const UpdateTourCategorySchema = z.object({
   status: z.enum(['active', 'inactive']).optional(),
 
   position: z.number().optional(),
-});
+})
 
 
 
@@ -171,7 +171,7 @@ export const CreateTourReviewSchema = z.object({
   comment: z.string().max(1000).optional(),
 
   images: z.array(z.string().url()).optional(), // Link ảnh (nếu có)
-});
+})
 
 export const UpdateTourReviewSchema = z.object({
   _id: z.string().min(1, 'Review ID is required'),
@@ -183,4 +183,4 @@ export const UpdateTourReviewSchema = z.object({
   images: z.array(z.string().url()).optional(),
 
   is_approved: z.boolean().optional(), // Trường này thường chỉ cho Admin chỉnh
-});
+})

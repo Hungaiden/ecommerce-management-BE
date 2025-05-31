@@ -31,9 +31,9 @@ Chỉ trả lại JSON, không cần giải thích.
     
     // Clean the response text
     const cleanText = rawText
-      .replace(/```json\s*/g, '')  // Remove ```json
-      .replace(/```\s*/g, '')      // Remove remaining ```
-      .trim()                      // Remove extra whitespace
+      .replace(/```json\s*/g, '') // Remove ```json
+      .replace(/```\s*/g, '') // Remove remaining ```
+      .trim() // Remove extra whitespace
 
     // Parse the cleaned JSON
     const result = JSON.parse(cleanText)

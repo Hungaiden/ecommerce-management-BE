@@ -7,15 +7,15 @@ export const sendBookingEmail = async ({ userEmail, bookingType, data }: BaseBoo
     service: 'gmail',
     auth: {
       user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS
-    }
-  });
+      pass: process.env.EMAIL_PASS,
+    },
+  })
 
-  let subject = '';
-  let htmlContent = '';
+  let subject = ''
+  let htmlContent = ''
 
   if (bookingType === 'tour') {
-    subject = '🎉 Xác nhận đặt tour thành công';
+    subject = '🎉 Xác nhận đặt tour thành công'
 
     htmlContent = `
       <div style="font-family: Arial, sans-serif; padding: 20px; background-color: #f4f4f4;">
@@ -60,13 +60,13 @@ export const sendBookingEmail = async ({ userEmail, bookingType, data }: BaseBoo
           </p>
         </div>
       </div>
-    `;
+    `
   }
 
   await transporter.sendMail({
     from: `"TourBooking" <${process.env.EMAIL_USER}>`,
     to: userEmail,
     subject,
-    html: htmlContent
-  });
-};
+    html: htmlContent,
+  })
+}
