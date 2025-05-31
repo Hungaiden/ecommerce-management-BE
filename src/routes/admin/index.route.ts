@@ -20,8 +20,11 @@ import { flightBookingRoute } from "./flights/flightBooking.route";
 import { flightReviewRoute } from "./flights/flightReview.route";
 import { airlineRoute } from "./flights/airline.route";
 import { GeminiRoute } from "../client/tours/gemini.route";
+import { dashboardRoute } from "./dashboard/dashboard.route";
 
 import uploadRoute from "./upload.route";
+
+import { VNPayRoute } from "../client/payment/vnpay.route";
 const adminRoutes = (app: Express) => {
   // route tour
   app.use("/tour-categories", toursCategoryRoute);
@@ -53,15 +56,22 @@ const adminRoutes = (app: Express) => {
   app.use("/flights/airports", airportRoute);
 
   app.use("/flights/airlines", airlineRoute);
+
   // route account
   app.use("/accounts", accountsRoute);
 
   app.use("/auth", authsRoute);
+
   // route upload
   app.use("/upload", uploadRoute);
 
   // route gemini
   app.use("/gemini", GeminiRoute);
+
+  // route payment
+  app.use("/payment", VNPayRoute);
+  // route dashboard
+  app.use("/dashboard", dashboardRoute);
 };
 
 export default adminRoutes;

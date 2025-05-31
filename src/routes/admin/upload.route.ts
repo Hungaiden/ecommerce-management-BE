@@ -8,7 +8,7 @@ import * as uploadController from "../../controllers/admin/upload.controller";
 // Upload single file
 router.post(
   "/single",
-  authMiddleware.isAuthorized,
+  // authMiddleware.isAuthorized,
   upload.single("image"),
   uploadController.uploadSingle
 );
@@ -16,7 +16,7 @@ router.post(
 // Upload multiple files
 router.post(
   "/multiple",
-  authMiddleware.isAuthorized,
+  // authMiddleware.isAuthorized,
   upload.array("images", 5), // Giới hạn 5 file
   uploadController.uploadMultiple
 );
