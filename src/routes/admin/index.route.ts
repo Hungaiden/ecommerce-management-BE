@@ -21,7 +21,7 @@ import { flightReviewRoute } from './flights/flightReview.route'
 import { airlineRoute } from './flights/airline.route'
 import { GeminiRoute } from '../client/tours/gemini.route'
 import { dashboardRoute } from './dashboard/dashboard.route'
-
+import { systemSettingsRoute } from './settings/systemSetting.route'
 import uploadRoute from './upload.route'
 
 import { VNPayRoute } from '../client/payment/vnpay.route'
@@ -70,8 +70,12 @@ const adminRoutes = (app: Express) => {
 
   // route payment
   app.use('/payment', VNPayRoute)
+  
   // route dashboard
   app.use('/dashboard', dashboardRoute)
+
+  // route system settings
+  app.use('/system-settings', systemSettingsRoute)
 }
 
 export default adminRoutes
