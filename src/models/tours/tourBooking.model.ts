@@ -36,7 +36,7 @@ const tourBookingSchema = new mongoose.Schema(
     status: {
       type: String,
       required: true,
-      enum: ['pending', 'confirmed', 'cancelled', 'completed'],
+      enum: ['pending', 'cancelled', 'completed'],
       default: 'pending',
     },
 

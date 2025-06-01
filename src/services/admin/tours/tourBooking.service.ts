@@ -42,7 +42,7 @@ export const createTourBooking = async (data: CreateTourBookingDto) => {
 export const getAllTourBookings = async () => {
   try {
     const bookings = await TourBooking.find()
-      .populate('tour_id', 'name')
+      .populate('tour_id')
       .sort({ booking_date: -1 })
 
     return bookings
@@ -79,10 +79,7 @@ export const getBookingsByTourId = async (
     }
 
     const bookings = await TourBooking.find(query)
-      .populate({
-        path: 'tour_id',
-        select: 'title code price',
-      })
+      .populate('tour_id')
       .populate('user_id', 'fullname email')
       .skip(offset)
       .limit(limit)
@@ -116,10 +113,7 @@ export const getBookingsByUserId = async (
     }
 
     const bookings = await TourBooking.find(query)
-      .populate({
-        path: 'tour_id',
-        select: 'title code price images',
-      })
+      .populate('tour_id')
       .skip(offset)
       .limit(limit)
       .sort(sortQuery)

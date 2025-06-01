@@ -44,7 +44,7 @@ export const getDashboardSummary = async () => {
     const totalBooking = {
       total: bookingStats.reduce((sum, curr) => sum + curr.count, 0),
       pending: bookingStatsMap['pending'] || 0,
-      confirmed: bookingStatsMap['confirmed'] || 0,
+      // confirmed: bookingStatsMap['confirmed'] || 0,
       completed: bookingStatsMap['completed'] || 0,
       cancelled: bookingStatsMap['cancelled'] || 0,
     }
@@ -76,11 +76,28 @@ export const getDashboardSummary = async () => {
       ended: tourStatsMap['ended'] || 0,
     }
 
-    
+    // Calculate total customers (sum of number_of_people from all paid bookings)
+    const totalCustomersResult = await TourBooking.aggregate([
+      {
+        $match: {
+          payment_status: 'paid',
+          deleted: false,
+        },
+      },
+      {
+        $group: {
+          _id: null,
+          total: { $sum: '$number_of_people' },
+        },
+      },
+    ])
+    const totalCustomers = totalCustomersResult[0]?.total || 0
+
     return {
       totalRevenue,
       totalBooking,
       totalTour,
+      totalCustomers,
     }
   } catch (error) {
     throw new Error('Error getting dashboard summary')
