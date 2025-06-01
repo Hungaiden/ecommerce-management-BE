@@ -14,12 +14,10 @@ ${JSON.stringify(userInput, null, 2)}
 Dưới đây là danh sách các tour có trong hệ thống:
 ${JSON.stringify(tours, null, 2)}
 
-Hãy chọn ra các tour phù hợp nhất. Trả lại kết quả theo định dạng:
-[
-  { "id": "Mã tour", "name": "Tên tour" },
-  ...
-]
-Chỉ trả lại JSON, không cần giải thích.
+Hãy tìm những tour phù hợp nhất với yêu cầu của người dùng. Ưu tiên hàng đầu là các tour có điểm đến (destination) giống với yêu cầu. Sau đó, xét thêm các yếu tố như thời gian đi (duration), ngày khởi hành (startDate), hoặc giá cả nếu cần. Trả lại danh sách các tour phù hợp nhất dưới dạng mảng JSON các id. Không giải thích, không dùng markdown.
+
+["id1", "id2", "id3", ...]
+Chỉ trả lại mảng JSON các id, không cần giải thích.
 `
 
   try {
@@ -36,8 +34,8 @@ Chỉ trả lại JSON, không cần giải thích.
       .trim() // Remove extra whitespace
 
     // Parse the cleaned JSON
-    const result = JSON.parse(cleanText)
-    return result
+    const tourIds = JSON.parse(cleanText)
+    return tourIds
 
   } catch (error) {
     console.error('Gemini API error:', error.message)

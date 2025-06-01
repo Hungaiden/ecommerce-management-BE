@@ -9,10 +9,18 @@ export const recommendTour = async (req, res) => {
     const allTours = await Tour.find({ deleted: false })
     
     // 2. Gọi Gemini để lấy tour phù hợp
-    const recommendations = await getTourRecommendations(userInput, allTours)
+    const recommendedTourIds = await getTourRecommendations(userInput, allTours)
 
-    // 3. Trả về kết quả
-    res.json({ recommended: recommendations })
+    if (!Array.isArray(recommendedTourIds) || recommendedTourIds.length === 0) {
+      return res.status(200).json({ tours: [] })
+    }
+
+    // Truy vấn DB lấy chi tiết tour theo id
+    const matchedTours = await Tour.find({ _id: { $in: recommendedTourIds } })
+  // 3. Trả về kết quả
+    res.status(200).json({ tours: matchedTours })
+    
+    
   } catch (err) {
     console.error(err)
     res.status(500).json({ message: 'Server error' })

@@ -8,7 +8,7 @@ export const getDashboardSummary = async () => {
     const revenueResult = await TourBooking.aggregate([
       {
         $match: {
-          payment_status: 'paid',
+          // payment_status: 'paid',
           deleted: false,
         },
       },

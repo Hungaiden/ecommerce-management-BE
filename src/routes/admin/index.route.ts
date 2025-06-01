@@ -25,6 +25,8 @@ import { systemSettingsRoute } from './settings/systemSetting.route'
 import uploadRoute from './upload.route'
 
 import { VNPayRoute } from '../client/payment/vnpay.route'
+
+import { profileRoute } from './profiles/profile.route'
 const adminRoutes = (app: Express) => {
   // route tour
   app.use('/tour-categories', toursCategoryRoute)
@@ -76,6 +78,9 @@ const adminRoutes = (app: Express) => {
 
   // route system settings
   app.use('/system-settings', systemSettingsRoute)
+
+  // route profile
+  app.use('/profile', profileRoute)
 }
 
 export default adminRoutes

@@ -8,7 +8,11 @@ const accountSchema = new mongoose.Schema(
     token: { type: String },
     phone: { type: String },
     avatar: { type: String },
-    role_id: { type: String, required: true },
+    role_id: {
+      type: String,
+      required: true,
+      enum: ['admin', 'staff'],
+    },
     status: { 
       type: String, 
       enum: ['active', 'inactive', 'suspended'], 
