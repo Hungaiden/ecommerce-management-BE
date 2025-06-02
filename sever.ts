@@ -14,6 +14,7 @@ import adminRoutes from './src/routes/admin/index.route'
 
 import { corsOptions } from './src/config/cors' 
 
+import morgan from 'morgan'
 const app: Express = express()
 const port: number = 3000
 
@@ -25,7 +26,7 @@ app.use(cors(corsOptions))
 app.use(bodyParser.urlencoded({ extended: false }))
 // parse application/json
 app.use(bodyParser.json())
-
+app.use(morgan('dev'))
 // App Local Variables
 app.locals.prefixAdmin = systemConfig.prefixAdmin
 

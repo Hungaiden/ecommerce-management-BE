@@ -30,6 +30,9 @@ export const createCategory = async (req: Request, res: Response) => {
 
 export const getAllCategories = async (req: Request, res: Response) => {
   try {
+    const filter = {
+      status: req.query.status as string,
+    }
     const searchParams: paramsTypes.SearchParams = {
       keyword: req.query.keyword as string,
       field: req.query.field as string,
@@ -49,6 +52,7 @@ export const getAllCategories = async (req: Request, res: Response) => {
       searchParams,
       sortParams,
       paginateParams,
+      filter,
     )
     if (result.categories.length === 0) {
       const response: ResponseListSuccess<typeof result.categories> = {

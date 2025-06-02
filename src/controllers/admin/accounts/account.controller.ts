@@ -30,6 +30,9 @@ export const createAccount = async (req: Request, res: Response) => {
 
 export const getAllAccounts = async (req: Request, res: Response) => {
   try {
+    const filter = {
+      status: req.query.status as string,
+    }
     const searchParams: paramsTypes.SearchParams = {
       keyword: req.query.keyword as string,
       field: req.query.field as string,
@@ -49,6 +52,7 @@ export const getAllAccounts = async (req: Request, res: Response) => {
       searchParams,
       sortParams,
       paginateParams,
+      filter,
     )
 
     if (result.accounts.length === 0) {

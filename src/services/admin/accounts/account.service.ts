@@ -31,11 +31,12 @@ export const getAllAccounts = async (
   searchParams?: paramsTypes.SearchParams,
   sortParams?: paramsTypes.SortParams,
   paginateParams?: paramsTypes.PaginateParams,
+  filter?: { status: any },
 ) => {
   try {
     // Điều kiện cơ bản
     const query: any = { deleted: false }
-
+    if (filter.status) query.status = filter.status
     // Tìm kiếm theo từ khóa
     if (searchParams?.keyword && searchParams?.field) {
       query[searchParams.field] = {

@@ -1,155 +1,191 @@
-import type { Request, Response, NextFunction } from 'express'
-import moment from 'moment'
-import crypto from 'crypto'
-import { sortObject } from '../../utils/sortObject'
-import qs from 'qs'
-import { TourBooking } from '../../models/tours/tourBooking.model'
-interface CreatePaymentRequestBody {
-  bookingId: string;
-  amount: number;
-  bankCode?: string;
-  language?: string;
-}
-export const createPaymentUrl = async (req: Request, res: Response, next: NextFunction) => {
+import type { Request, Response, NextFunction } from "express";
+import moment from "moment";
+import crypto from "crypto";
+import { sortObject } from "../../utils/sortObject";
+import qs from "qs";
+import { TourBooking } from "../../models/tours/tourBooking.model";
+import  { VNPay, ignoreLogger, ProductCode, VnpLocale, dateFormat, HashAlgorithm } from "vnpay"
+
+export const createPaymentUrl = async (req: Request, res: Response) => {
   try {
-    const { bookingId } = req.params
-    console.log('📌 bookingId:', bookingId)
-
-    if (!bookingId || typeof bookingId !== 'string') {
-      res.status(400).json({ message: 'Missing or invalid bookingId' })
-      return
+    const bookingId = req.params.bookingId;
+    if (!bookingId) {
+      throw new Error("Missing bookingId");
     }
 
-    const booking = await TourBooking.findById(bookingId)
-
+    const booking = await TourBooking.findById(bookingId);
     if (!booking) {
-      res.status(404).json({ message: 'Booking not found' })
-      return
+      throw new Error("Booking not found");
     }
-
-    if (booking.payment_status === 'paid') {
-      res.status(400).json({ message: 'Booking already paid' })
-      return
-    }
-
-    const amount = booking.total_price
-    const ipAddr = '127.0.0.1'
-    
-
-    const tmnCode = process.env.VNP_TMN_CODE!
-    const secretKey = process.env.VNP_HASH_SECRET!
-    const vnpUrl = process.env.VNP_URL!
-    const returnUrl = process.env.VNP_RETURN_URL!
-
-    const createDate = moment().format('YYYYMMDDHHmmss')
+    const tmnCode = process.env.VNP_TMN_CODE
+    const secretKey = process.env.VNP_HASH_SECRET
     const orderInfo = `Thanh toan booking ${bookingId}`
+    const vnpay = new VNPay({
+      tmnCode: tmnCode,
+      secureSecret: secretKey,
+      vnpayHost: "https://sandbox.vnpayment.vn",
+      testMode: true,
+      hashAlgorithm: HashAlgorithm.SHA512,
+      enableLog: true,
+      loggerFn: ignoreLogger,
+      endpoints: {
+          paymentEndpoint: "paymentv2/vpcpay.html", // Endpoint thanh toán
+          queryDrRefundEndpoint: "merchant_webapi/api/transaction", // Endpoint tra cứu & hoàn tiền
+          getBankListEndpoint: "qrpayauth/api/merchant/get_bank_list", // Endpoint lấy danh sách ngân hàng
+      },
+  });
 
-    const vnp_Params: { [key: string]: string } = {
-      vnp_Version: '2.1.0',
-      vnp_Command: 'pay',
-      vnp_TmnCode: tmnCode,
-      vnp_Locale: 'vn',
-      vnp_CurrCode: 'VND',
+  const vnpayResponse = await vnpay.buildPaymentUrl({
+      vnp_Amount: booking.total_price,
+      vnp_IpAddr: "13.160.92.202",
       vnp_TxnRef: bookingId,
       vnp_OrderInfo: orderInfo,
-      vnp_OrderType: 'other',
-      vnp_Amount: (amount * 100).toString(), // VNPAY yêu cầu x100
-      vnp_ReturnUrl: returnUrl,
-      vnp_IpAddr: ipAddr as string,
-      vnp_CreateDate: createDate,
-    }
+      vnp_OrderType: ProductCode.Other,
+      vnp_ReturnUrl: "https://book-tour-khaki.vercel.app/payment/vnpay-return",
+      vnp_Locale: VnpLocale.VN, // 'vn' hoặc 'en'
+      vnp_CreateDate: dateFormat(new Date()),
+      vnp_ExpireDate: dateFormat(new Date(Date.now() + 30 * 60 * 1000)),
+  });
 
-    const sortedParams = sortObject(vnp_Params)
-    const signData = qs.stringify(sortedParams, { encode: false })
-
-    const hmac = crypto.createHmac('sha512', secretKey)
-    const signed = hmac.update(Buffer.from(signData, 'utf-8')).digest('hex')
-
-    sortedParams.vnp_SecureHash = signed
-
-    const paymentUrl = `${vnpUrl}?${qs.stringify(sortedParams, { encode: false })}`
-
-    console.log('🔍 SignData:', signData)
-    console.log('✅ SecureHash:', signed)
-
-    // Save to DB (optional for debug/reference)
-    booking.payment_url = paymentUrl
-    await booking.save()
-
-    res.status(200).json({
-      message: 'Successfully created payment URL',
-      paymentUrl,
-    })
-    return
+  res.json(vnpayResponse);
   } catch (error) {
-    next(error)
-    return
+    console.log("error", error);
+    throw error;
   }
-}
+};
+
 export const vnpayReturn = async (
   req: Request,
   res: Response,
-  next: NextFunction,
 ) => {
   try {
-    const vnp_Params = { ...req.query }
-    const secureHash = vnp_Params['vnp_SecureHash'] as string
-    delete vnp_Params['vnp_SecureHash']
-    delete vnp_Params['vnp_SecureHashType']
+    const vnp_Params = { ...req.query };
+    const secureHash = vnp_Params["vnp_SecureHash"] as string;
+    delete vnp_Params["vnp_SecureHash"];
+    delete vnp_Params["vnp_SecureHashType"];
 
-    // Get config from env
-    const secretKey = process.env.VNP_HASH_SECRET
+    const secretKey = process.env.VNP_HASH_SECRET;
     if (!secretKey) {
-      throw new Error('Missing VNP_HASH_SECRET')
+      res.status(500).json({ message: "Missing VNP_HASH_SECRET" });
+      return;
     }
 
-    // Sort params and create signData
-    const sortedParams = sortObject(vnp_Params)
-    const signData = qs.stringify(sortedParams, { encode: false })
-    const hmac = crypto.createHmac('sha512', secretKey)
-    const signed = hmac.update(Buffer.from(signData, 'utf-8')).digest('hex')
-
-    console.log('signData:', signData)
-    console.log('signed:', signed)
-    console.log('secureHash from VNPay:', secureHash)
+    const sortedParams = sortObject(vnp_Params);
+    const signData = qs.stringify(sortedParams, { encode: false });
+    const hmac = crypto.createHmac("sha512", secretKey);
+    const signed = hmac.update(Buffer.from(signData, "utf-8")).digest("hex");
 
     if (secureHash !== signed) {
-      res.status(400).json({ message: 'Invalid secure hash' })
-      return
+      res.status(400).json({ message: "Invalid secure hash" });
+      return;
     }
 
-    // Check payment result
-    const responseCode = vnp_Params['vnp_ResponseCode']
-    const bookingId = vnp_Params['vnp_TxnRef']
-    let update
-    if (responseCode === '00') {
-      // Success
+    const responseCode = vnp_Params["vnp_ResponseCode"];
+    const transactionStatus = vnp_Params["vnp_TransactionStatus"];
+    const bookingId = vnp_Params["vnp_TxnRef"];
+
+    let update: any;
+    if (responseCode === "00" && (!transactionStatus || transactionStatus === "00")) {
+      // Thanh toán thành công
       update = {
-        payment_status: 'paid',
-        status: 'confirmed',
-        transaction_code: vnp_Params['vnp_TransactionNo'],
+        payment_status: "paid",
+        status: "confirmed",
+        transaction_code: vnp_Params["vnp_TransactionNo"],
         payment_time: new Date(),
         vnp_response_code: responseCode,
-      }
+      };
     } else {
-      // Failed
+      // Thanh toán thất bại
       update = {
-        payment_status: 'failed',
-        status: 'cancelled',
+        payment_status: "failed",
+        status: "cancelled",
         vnp_response_code: responseCode,
-      }
+      };
     }
-    // Update booking
-    const { TourBooking } = require('../../models/tours/tourBooking.model')
-    await TourBooking.findOneAndUpdate({ _id: bookingId }, update)
-    // Redirect or respond
-    res.status(200).json({
-      message:
-        responseCode === '00' ? 'Thanh toán thành công' : 'Thanh toán thất bại',
-      bookingId,
-      responseCode,
-    })
+
+    const updatedBooking = await TourBooking.findByIdAndUpdate(bookingId, update);
+    if (!updatedBooking) {
+      res.status(404).json({ message: "Booking not found" });
+    }
+
+    // Redirect người dùng về FE (tuỳ thuộc kết quả)
+    const FE_URL = "https://book-tour-khaki.vercel.app/payment/result";
+    res.redirect(`${FE_URL}?status=${update.payment_status}&bookingId=${bookingId}`);
   } catch (error) {
-    next(error)
+    console.log("error", error);
+    throw error;
   }
-}
+};
+
+export const vnpayIPN = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const vnp_Params = { ...req.query };
+    const secureHash = vnp_Params["vnp_SecureHash"] as string;
+    delete vnp_Params["vnp_SecureHash"];
+    delete vnp_Params["vnp_SecureHashType"];
+
+    const secretKey = process.env.VNP_HASH_SECRET;
+    if (!secretKey) {
+      res.status(500).json({ message: "Missing VNP_HASH_SECRET" });
+      return;
+    }
+
+    // Kiểm tra hash
+    const sortedParams = sortObject(vnp_Params);
+    const signData = qs.stringify(sortedParams, { encode: false });
+    const hmac = crypto.createHmac("sha512", secretKey);
+    const signed = hmac.update(Buffer.from(signData, "utf-8")).digest("hex");
+
+    if (secureHash !== signed) {
+      res.status(400).json({ RspCode: "97", Message: "Invalid signature" });
+      return;
+    }
+
+    const bookingId = vnp_Params["vnp_TxnRef"];
+    const responseCode = vnp_Params["vnp_ResponseCode"];
+    const transactionStatus = vnp_Params["vnp_TransactionStatus"];
+    const transactionCode = vnp_Params["vnp_TransactionNo"];
+
+    const booking = await TourBooking.findById(bookingId);
+    if (!booking) {
+      res.status(404).json({ RspCode: "01", Message: "Booking not found" });
+      return;
+    }
+
+    // Nếu booking đã cập nhật rồi thì bỏ qua
+    if (booking.payment_status === "paid") {
+      res.status(200).json({ RspCode: "00", Message: "Already processed" });
+      return;
+    }
+
+    let update;
+    if (responseCode === "00" && transactionStatus === "00") {
+      update = {
+        payment_status: "paid",
+        status: "confirmed",
+        transaction_code: transactionCode,
+        payment_time: new Date(),
+        vnp_response_code: responseCode,
+      };
+    } else {
+      update = {
+        payment_status: "failed",
+        status: "cancelled",
+        vnp_response_code: responseCode,
+      };
+    }
+
+    await TourBooking.findByIdAndUpdate(bookingId, update);
+
+    // Phản hồi về cho VNPay
+    res.status(200).json({ RspCode: "00", Message: "Success" });
+  } catch (error) {
+    console.error("VNPay IPN error:", error);
+    res.status(500).json({ RspCode: "99", Message: "Unknown error" });
+  }
+};
+

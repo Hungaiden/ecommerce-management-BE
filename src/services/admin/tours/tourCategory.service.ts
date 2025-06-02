@@ -30,10 +30,11 @@ export const getAllTourCategories = async (
   searchParams?: paramsTypes.SearchParams,
   sortParams?: paramsTypes.SortParams,
   paginateParams?: paramsTypes.PaginateParams,
+  filter?: { status: any },
 ) => {
   try {
     const query: any = { deleted: false }
-
+    if (filter.status) query.status = filter.status
     if (searchParams?.keyword && searchParams?.field) {
       query[searchParams.field] = {
         $regex: searchParams.keyword,

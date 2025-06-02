@@ -1,13 +1,19 @@
-import { Router } from 'express'
-import {
+import { Router } from "express";
+import { 
   createPaymentUrl,
+  vnpayIPN,
   vnpayReturn,
-} from '../../../controllers/payment/vnpay.controller'
+} from "../../../controllers/payment/vnpay.controller";
 
-const router = Router()
+const router = Router();
 
-router.post('/create-payment-url/:bookingId', createPaymentUrl)
+// Tạo link thanh toán và redirect người dùng đến VNPay để thanh toán.
+router.post("/create-payment-url/:bookingId", createPaymentUrl);
 
-router.get('/vnpay-return', vnpayReturn)
+//VNPay sẽ redirect người dùng về trang của bạn sau khi thanh toán (dù thành công hay thất bại).
+router.get("/vnpay-return", vnpayReturn);
 
-export const VNPayRoute: Router = router
+router.get("/vnpay-ipn", vnpayIPN);
+
+
+export const VNPayRoute: Router = router;
