@@ -1,0 +1,199 @@
+@baseUrl = http://localhost:3000
+@contentType = application/json
+@token = your_access_token_here
+@tourId = 6650f1f1f1f1f1f1f1f1f1f1
+@categoryId = 6650c2c2c2c2c2c2c2c2c2c2
+
+### ==========================================
+###              TOURS
+### ==========================================
+
+### Get All Tours
+GET {{baseUrl}}/tours?offset=0&limit=10
+
+###
+
+### Get All Tours (with filter & sort)
+GET {{baseUrl}}/tours?status=active&minPrice=100&maxPrice=5000&offset=0&limit=10&sortBy=price&sortType=asc
+
+###
+
+### Get Tour By ID
+GET {{baseUrl}}/tours/detail/{{tourId}}
+
+###
+
+### Get Tours By Category
+GET {{baseUrl}}/tours/category/{{categoryId}}?offset=0&limit=10
+
+###
+
+### Create Tour
+POST {{baseUrl}}/tours/create
+Content-Type: {{contentType}}
+Authorization: Bearer {{token}}
+
+{
+  "title": "Tour Hà Nội - Hạ Long 3N2Đ",
+  "code": "TOUR-HN-HL-001",
+  "category_id": "{{categoryId}}",
+  "images": [],
+  "price": 2500000,
+  "discount": 10,
+  "information": "Tour khám phá Hạ Long tuyệt đẹp",
+  "schedule": "Ngày 1: Khởi hành...",
+  "duration_days": 3,
+  "stock": 20,
+  "transportation": "bus",
+  "status": "active",
+  "position": 1,
+  "is_featured": false
+}
+
+###
+
+### Update Tour
+PATCH {{baseUrl}}/tours/update/{{tourId}}
+Content-Type: {{contentType}}
+Authorization: Bearer {{token}}
+
+{
+  "title": "Tour Hà Nội - Hạ Long 4N3Đ",
+  "price": 3000000,
+  "stock": 15
+}
+
+###
+
+### Delete Tour
+DELETE {{baseUrl}}/tours/deleteOne/{{tourId}}
+Authorization: Bearer {{token}}
+
+### ==========================================
+###          TOUR CATEGORIES
+### ==========================================
+
+### Get All Categories
+GET {{baseUrl}}/tour-categories
+
+###
+
+### Get Category By ID
+GET {{baseUrl}}/tour-categories/detail/{{categoryId}}
+
+###
+
+### Create Category
+POST {{baseUrl}}/tour-categories/create
+Content-Type: {{contentType}}
+Authorization: Bearer {{token}}
+
+{
+  "title": "Du lịch biển",
+  "description": "Các tour du lịch biển đảo"
+}
+
+###
+
+### Update Category
+PATCH {{baseUrl}}/tour-categories/update/{{categoryId}}
+Content-Type: {{contentType}}
+Authorization: Bearer {{token}}
+
+{
+  "title": "Du lịch biển đảo",
+  "description": "Khám phá biển đảo Việt Nam"
+}
+
+###
+
+### Delete Category
+DELETE {{baseUrl}}/tour-categories/delete/{{categoryId}}
+Authorization: Bearer {{token}}
+
+### ==========================================
+###          TOUR REVIEWS
+### ==========================================
+
+### Get All Tour Reviews
+GET {{baseUrl}}/tours/reviews
+
+###
+
+### Get Reviews By Tour ID
+GET {{baseUrl}}/tours/reviews/{{tourId}}
+
+###
+
+### Create Tour Review
+POST {{baseUrl}}/tours/reviews/create
+Content-Type: {{contentType}}
+Authorization: Bearer {{token}}
+
+{
+  "tour_id": "{{tourId}}",
+  "rating": 5,
+  "comment": "Tour rất tuyệt vời!"
+}
+
+###
+
+### Approve Tour Review
+PATCH {{baseUrl}}/tours/reviews/approve/{{tourId}}
+
+###
+
+### Update Tour Review
+PATCH {{baseUrl}}/tours/reviews/update/{{tourId}}
+Content-Type: {{contentType}}
+
+{
+  "comment": "Rất tốt, sẽ quay lại!"
+}
+
+###
+
+### Delete Tour Review
+DELETE {{baseUrl}}/tours/reviews/delete/{{tourId}}
+
+### ==========================================
+###          TOUR BOOKINGS
+### ==========================================
+
+### Get All Tour Bookings
+GET {{baseUrl}}/tours/bookings/getAll
+
+###
+
+### Get Tour Booking By ID
+GET {{baseUrl}}/tours/bookings/detail/{{tourId}}
+
+###
+
+### Get Bookings By Tour ID
+GET {{baseUrl}}/tours/bookings/tour/{{tourId}}
+
+###
+
+### Get Bookings By User ID
+GET {{baseUrl}}/tours/bookings/user/{{tourId}}
+
+###
+
+### Get Bookings By Email
+GET {{baseUrl}}/tours/bookings/user@example.com
+
+###
+
+### Create Tour Booking
+POST {{baseUrl}}/tours/bookings/create
+Content-Type: {{contentType}}
+
+{
+  "tour_id": "{{tourId}}",
+  "name": "Nguyễn Văn A",
+  "email": "user@example.com",
+  "phone": "0987654321",
+  "numberOfPeople": 2,
+  "totalPrice": 5000000
+}

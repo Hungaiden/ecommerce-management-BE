@@ -1,0 +1,291 @@
+@baseUrl = http://localhost:3000
+@contentType = application/json
+@token = your_access_token_here
+@flightId = 6650f1f1f1f1f1f1f1f1f1f1
+@airlineId = 6650a1a1a1a1a1a1a1a1a1a1
+@airportId = 6650b1b1b1b1b1b1b1b1b1b1
+@ticketClassId = 6650c1c1c1c1c1c1c1c1c1c1
+@bookingId = 6650d1d1d1d1d1d1d1d1d1d1
+@userId = 6650e1e1e1e1e1e1e1e1e1e1
+
+### ==========================================
+###              FLIGHTS
+### ==========================================
+
+### Get All Flights
+GET {{baseUrl}}/flights?offset=0&limit=10
+
+###
+
+### Get Flight By ID
+GET {{baseUrl}}/flights/detail/{{flightId}}
+
+###
+
+### Create Flight
+POST {{baseUrl}}/flights/create
+Content-Type: {{contentType}}
+Authorization: Bearer {{token}}
+
+{
+  "flightNumber": "VN123",
+  "airline_id": "{{airlineId}}",
+  "departure": "{{airportId}}",
+  "arrival": "{{airportId}}",
+  "departureTime": "2026-03-01T08:00:00.000Z",
+  "arrivalTime": "2026-03-01T10:30:00.000Z",
+  "price": 1200000,
+  "stock": 180,
+  "status": "active"
+}
+
+###
+
+### Update Flight
+PATCH {{baseUrl}}/flights/update/{{flightId}}
+Content-Type: {{contentType}}
+Authorization: Bearer {{token}}
+
+{
+  "price": 1100000,
+  "stock": 150,
+  "status": "active"
+}
+
+###
+
+### Delete Flight
+DELETE {{baseUrl}}/flights/delete/{{flightId}}
+Authorization: Bearer {{token}}
+
+### ==========================================
+###              AIRLINES
+### ==========================================
+
+### Get All Airlines
+GET {{baseUrl}}/flights/airlines?offset=0&limit=10
+
+###
+
+### Get Airline By ID
+GET {{baseUrl}}/flights/airlines/detail/{{airlineId}}
+
+###
+
+### Create Airline
+POST {{baseUrl}}/flights/airlines/create
+Content-Type: {{contentType}}
+Authorization: Bearer {{token}}
+
+{
+  "name": "Vietnam Airlines",
+  "code": "VN",
+  "logo": "https://example.com/logo.png",
+  "country": "Vietnam"
+}
+
+###
+
+### Update Airline
+PATCH {{baseUrl}}/flights/airlines/update/{{airlineId}}
+Content-Type: {{contentType}}
+Authorization: Bearer {{token}}
+
+{
+  "name": "Vietnam Airlines Corp",
+  "country": "Việt Nam"
+}
+
+###
+
+### Delete Airline
+DELETE {{baseUrl}}/flights/airlines/delete/{{airlineId}}
+Authorization: Bearer {{token}}
+
+### ==========================================
+###              AIRPORTS
+### ==========================================
+
+### Get All Airports
+GET {{baseUrl}}/flights/airports?offset=0&limit=10
+
+###
+
+### Get Airport By ID
+GET {{baseUrl}}/flights/airports/detail/{{airportId}}
+
+###
+
+### Create Airport
+POST {{baseUrl}}/flights/airports/create
+Content-Type: {{contentType}}
+Authorization: Bearer {{token}}
+
+{
+  "name": "Sân bay Nội Bài",
+  "code": "HAN",
+  "city": "Hà Nội",
+  "country": "Vietnam"
+}
+
+###
+
+### Update Airport
+PATCH {{baseUrl}}/flights/airports/update/{{airportId}}
+Content-Type: {{contentType}}
+Authorization: Bearer {{token}}
+
+{
+  "name": "Sân bay Quốc tế Nội Bài",
+  "city": "Hà Nội"
+}
+
+###
+
+### Delete Airport
+DELETE {{baseUrl}}/flights/airports/delete/{{airportId}}
+Authorization: Bearer {{token}}
+
+### ==========================================
+###           TICKET CLASSES
+### ==========================================
+
+### Get All Ticket Classes
+GET {{baseUrl}}/ticket-classes?offset=0&limit=10
+
+###
+
+### Get Ticket Class By ID
+GET {{baseUrl}}/ticket-classes/detail/{{ticketClassId}}
+
+###
+
+### Create Ticket Class
+POST {{baseUrl}}/ticket-classes/create
+Content-Type: {{contentType}}
+Authorization: Bearer {{token}}
+
+{
+  "flight_id": "{{flightId}}",
+  "name": "Economy",
+  "price": 1200000,
+  "stock": 150,
+  "benefits": ["20kg hành lý", "Bữa ăn nhẹ"]
+}
+
+###
+
+### Update Ticket Class
+PATCH {{baseUrl}}/ticket-classes/update/{{ticketClassId}}
+Content-Type: {{contentType}}
+Authorization: Bearer {{token}}
+
+{
+  "price": 1100000,
+  "stock": 140
+}
+
+###
+
+### Delete Ticket Class
+DELETE {{baseUrl}}/ticket-classes/delete/{{ticketClassId}}
+Authorization: Bearer {{token}}
+
+### ==========================================
+###          FLIGHT BOOKINGS
+### ==========================================
+
+### Get All Flight Bookings
+GET {{baseUrl}}/flights/bookings
+Authorization: Bearer {{token}}
+
+###
+
+### Get Flight Booking By ID
+GET {{baseUrl}}/flights/bookings/detail/{{bookingId}}
+Authorization: Bearer {{token}}
+
+###
+
+### Get Bookings By User ID
+GET {{baseUrl}}/flights/bookings/user/{{userId}}
+Authorization: Bearer {{token}}
+
+###
+
+### Create Flight Booking
+POST {{baseUrl}}/flights/bookings/create
+Content-Type: {{contentType}}
+Authorization: Bearer {{token}}
+
+{
+  "flight_id": "{{flightId}}",
+  "ticket_class_id": "{{ticketClassId}}",
+  "name": "Nguyễn Văn A",
+  "email": "user@example.com",
+  "phone": "0987654321",
+  "numberOfTickets": 2,
+  "totalPrice": 2400000
+}
+
+###
+
+### Update Flight Booking
+PATCH {{baseUrl}}/flights/bookings/update/{{bookingId}}
+Content-Type: {{contentType}}
+Authorization: Bearer {{token}}
+
+{
+  "status": "confirmed"
+}
+
+###
+
+### Delete Flight Booking
+DELETE {{baseUrl}}/flights/bookings/delete/{{bookingId}}
+Authorization: Bearer {{token}}
+
+### ==========================================
+###          FLIGHT REVIEWS
+### ==========================================
+
+### Get All Flight Reviews
+GET {{baseUrl}}/flights/reviews
+
+###
+
+### Get Reviews By Flight ID
+GET {{baseUrl}}/flights/reviews/{{flightId}}
+
+###
+
+### Create Flight Review
+POST {{baseUrl}}/flights/reviews/create
+Content-Type: {{contentType}}
+
+{
+  "flight_id": "{{flightId}}",
+  "rating": 4,
+  "comment": "Chuyến bay đúng giờ, dịch vụ tốt"
+}
+
+###
+
+### Approve Flight Review
+PATCH {{baseUrl}}/flights/reviews/approve/{{bookingId}}
+Authorization: Bearer {{token}}
+
+###
+
+### Update Flight Review
+PATCH {{baseUrl}}/flights/reviews/update/{{bookingId}}
+Content-Type: {{contentType}}
+
+{
+  "comment": "Tốt hơn lần trước!"
+}
+
+###
+
+### Delete Flight Review
+DELETE {{baseUrl}}/flights/reviews/delete/{{bookingId}}

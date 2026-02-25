@@ -1,4 +1,4 @@
-import { TourStatus } from '../../dto/tours/create.tour.dto'
+import { TourStatus } from "../../dto/tours/create.tour.dto";
 
 export type SortParams = { sortBy: string; sortType: SORT_TYPE };
 
@@ -7,7 +7,7 @@ export type SearchParams = { keyword: string; field: string };
 export type PaginateParams = { offset: number; limit: number };
 
 export type TourFilterParams = {
-  status?: string; 
+  status?: string;
   minPrice?: number;
   maxPrice?: number;
   tourCategory?: string;
@@ -24,10 +24,16 @@ export type HotelFilterParams = {
   city?: string;
 };
 
+export type ProductFilterParams = {
+  status?: string;
+  minPrice?: number;
+  maxPrice?: number;
+  category?: string;
+  brand?: string;
+  isFeatured?: boolean;
+};
+
 export enum SORT_TYPE {
-  'DESC' = 'desc',
-  'ASC' = 'asc', 
-} 
-
-
-
+  "DESC" = "desc",
+  "ASC" = "asc",
+}

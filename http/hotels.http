@@ -1,0 +1,188 @@
+@baseUrl = http://localhost:3000
+@contentType = application/json
+@token = your_access_token_here
+@hotelId = 6650f1f1f1f1f1f1f1f1f1f1
+@roomTypeId = 6650a1a1a1a1a1a1a1a1a1a1
+@bookingId = 6650b1b1b1b1b1b1b1b1b1b1
+@userId = 6650c1c1c1c1c1c1c1c1c1c1
+
+### ==========================================
+###              HOTELS
+### ==========================================
+
+### Get All Hotels
+GET {{baseUrl}}/hotels?offset=0&limit=10
+
+###
+
+### Get Hotel By ID
+GET {{baseUrl}}/hotels/detail/{{hotelId}}
+
+###
+
+### Get Room Types By Hotel ID
+GET {{baseUrl}}/hotels/room-types/{{hotelId}}
+
+###
+
+### Create Hotel (multipart/form-data - có upload ảnh)
+# Dùng Postman/curl cho file upload
+# POST {{baseUrl}}/hotels/create
+# Content-Type: multipart/form-data
+# Authorization: Bearer {{token}}
+
+###
+
+### Update Hotel
+PATCH {{baseUrl}}/hotels/update/{{hotelId}}
+Content-Type: {{contentType}}
+Authorization: Bearer {{token}}
+
+{
+  "name": "Khách sạn Mặt Trời",
+  "description": "Khách sạn 5 sao tại Đà Nẵng",
+  "price": 1500000,
+  "city": "Đà Nẵng",
+  "address": "123 Bạch Đằng, Đà Nẵng",
+  "status": "active"
+}
+
+###
+
+### Delete Hotel
+DELETE {{baseUrl}}/hotels/deleteOne/{{hotelId}}
+Authorization: Bearer {{token}}
+
+### ==========================================
+###           ROOM TYPES
+### ==========================================
+
+### Get All Room Types
+GET {{baseUrl}}/room-types?offset=0&limit=10
+
+###
+
+### Get Room Type By ID
+GET {{baseUrl}}/room-types/detail/{{roomTypeId}}
+
+###
+
+### Create Room Type
+POST {{baseUrl}}/room-types/create
+Content-Type: {{contentType}}
+Authorization: Bearer {{token}}
+
+{
+  "hotel_id": "{{hotelId}}",
+  "name": "Phòng Deluxe",
+  "description": "Phòng cao cấp với view biển",
+  "price": 1200000,
+  "capacity": 2,
+  "stock": 10,
+  "status": "active"
+}
+
+###
+
+### Update Room Type
+PATCH {{baseUrl}}/room-types/update/{{roomTypeId}}
+Content-Type: {{contentType}}
+Authorization: Bearer {{token}}
+
+{
+  "name": "Phòng Deluxe Sea View",
+  "price": 1400000,
+  "stock": 8
+}
+
+###
+
+### Delete Room Type
+DELETE {{baseUrl}}/room-types/delete/{{roomTypeId}}
+Authorization: Bearer {{token}}
+
+### ==========================================
+###          HOTEL BOOKINGS
+### ==========================================
+
+### Get All Hotel Bookings
+GET {{baseUrl}}/hotels/bookings
+Authorization: Bearer {{token}}
+
+###
+
+### Get Hotel Booking By ID
+GET {{baseUrl}}/hotels/bookings/detail/{{bookingId}}
+
+###
+
+### Get Bookings By Hotel ID
+GET {{baseUrl}}/hotels/bookings/hotel/{{hotelId}}
+
+###
+
+### Get Bookings By User ID
+GET {{baseUrl}}/hotels/bookings/user/{{userId}}
+
+###
+
+### Create Hotel Booking
+POST {{baseUrl}}/hotels/bookings/create
+Content-Type: {{contentType}}
+
+{
+  "hotel_id": "{{hotelId}}",
+  "room_type_id": "{{roomTypeId}}",
+  "name": "Nguyễn Văn A",
+  "email": "user@example.com",
+  "phone": "0987654321",
+  "checkIn": "2026-03-01",
+  "checkOut": "2026-03-03",
+  "numberOfRooms": 1,
+  "totalPrice": 2800000
+}
+
+### ==========================================
+###          HOTEL REVIEWS
+### ==========================================
+
+### Get All Hotel Reviews
+GET {{baseUrl}}/hotels/reviews
+
+###
+
+### Get Reviews By Hotel ID
+GET {{baseUrl}}/hotels/reviews/hotel/{{hotelId}}
+
+###
+
+### Create Hotel Review
+POST {{baseUrl}}/hotels/reviews/create
+Content-Type: {{contentType}}
+Authorization: Bearer {{token}}
+
+{
+  "hotel_id": "{{hotelId}}",
+  "rating": 5,
+  "comment": "Khách sạn rất tốt!"
+}
+
+###
+
+### Approve Hotel Review
+PATCH {{baseUrl}}/hotels/reviews/approve/{{bookingId}}
+
+###
+
+### Update Hotel Review
+PATCH {{baseUrl}}/hotels/reviews/update/{{bookingId}}
+Content-Type: {{contentType}}
+
+{
+  "comment": "Dịch vụ xuất sắc!"
+}
+
+###
+
+### Delete Hotel Review
+DELETE {{baseUrl}}/hotels/reviews/delete/{{bookingId}}
