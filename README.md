@@ -2,7 +2,7 @@
 
 Backend RESTful API cho hệ thống quản lý sản phẩm thời trang.
 
-## Công nghệ sử dụng
+## Công nghệ sử dụngX
 
 | Công nghệ                   | Mục đích                                |
 | --------------------------- | --------------------------------------- |

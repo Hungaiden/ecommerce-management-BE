@@ -14,7 +14,6 @@ import { systemConfig } from "./src/config/system";
 import adminRoutes from "./src/routes/admin/index.route";
 
 import { corsOptions } from "./src/config/cors";
-
 const app: Express = express();
 const port: number = 3000;
 
