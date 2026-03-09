@@ -1,13 +1,13 @@
 export interface BookingItemDto {
   product_id: string;
-  name: string;
+  name?: string;
   thumbnail?: string;
   price: number;
-  discount?: number;
-  size?: string;
+  discount: number;
+  size: string;
   color?: string;
   quantity: number;
-  subtotal: number;
+  subtotal?: number;
 }
 
 export interface CreateProductBookingDto {
@@ -20,6 +20,6 @@ export interface CreateProductBookingDto {
     address?: string;
   };
   note?: string;
-  total_price: number;
+  total_price?: number;
   payment_method?: "vnpay" | "momo" | "cash" | "bank_transfer";
 }

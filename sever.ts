@@ -4,6 +4,8 @@ import express, { Express, Request, Response } from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import morgan from "morgan";
+import swaggerUi from "swagger-ui-express";
+import { swaggerDocument } from "./src/config/swagger";
 dotenv.config();
 
 import bodyParser from "body-parser";
@@ -28,12 +30,15 @@ app.use(bodyParser.json());
 
 app.use(morgan("dev"));
 
+// Swagger UI
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+
 // App Local Variables
 app.locals.prefixAdmin = systemConfig.prefixAdmin;
 
 adminRoutes(app);
 
 app.listen(port, () => {
-    // eslint-disable-next-line no-undef
-    console.log(`App listening on port ${port}`);
+  // eslint-disable-next-line no-undef
+  console.log(`App listening on port ${port}`);
 });

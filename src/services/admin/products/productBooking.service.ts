@@ -15,6 +15,7 @@ export const createProductBooking = async (data: CreateProductBookingDto) => {
       throw new Error(`Sản phẩm ${product.name} không đủ hàng trong kho!`);
     }
   }
+  // neu chua co quanlity
 
   const newBooking = await ProductBooking.create(data);
 
