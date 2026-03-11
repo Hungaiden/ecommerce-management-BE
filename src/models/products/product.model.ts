@@ -46,10 +46,10 @@ const productSchema = new mongoose.Schema(
       trim: true,
     },
     category: {
-      type: String,
-      default: "",
-      trim: true,
-    }, // Danh mục: Pullovers, Shirts, Pants...
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "ProductCategory",
+      required: true,
+    },
     sizes: {
       type: [String],
       default: [],

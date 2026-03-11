@@ -68,6 +68,7 @@ export const getAllProducts = async (
       .skip(safeOffset)
       .limit(limit)
       .sort(sortQuery)
+      .populate("category", "title")
       .lean();
 
     const totalPages = Math.ceil(totalRows / limit);
@@ -81,7 +82,9 @@ export const getAllProducts = async (
 // Lấy sản phẩm theo ID
 export const getProductByIdService = async (id: string) => {
   try {
-    const product = await Product.findOne({ _id: id, deletedAt: null }).lean();
+    const product = await Product.findOne({ _id: id, deletedAt: null })
+      .populate("category", "title")
+      .lean();
     if (!product) {
       throw new Error("Sản phẩm không tồn tại!");
     }

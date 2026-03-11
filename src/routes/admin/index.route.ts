@@ -14,6 +14,7 @@ import { cartRoute } from "../client/cart/cart.route";
 import { profileRoute } from "./profiles/profile.route";
 import { productsRoute } from "./products/product.route";
 import { productCategoryRoute } from "./products/productCategory.route";
+import { adminCartRoute } from "./cart/adminCart.route";
 import { productBookingRoute } from "./products/productBooking.route";
 import { productReviewRoute } from "./products/productReview.route";
 
@@ -49,6 +50,9 @@ const adminRoutes = (app: Express) => {
 
   // route product category
   app.use("/product-categories", productCategoryRoute);
+
+  // route admin carts
+  app.use("/admin-carts", adminCartRoute);
 
   // route product booking
   app.use("/products/bookings", productBookingRoute);
