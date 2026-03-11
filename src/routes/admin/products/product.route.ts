@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { authMiddleware } from "../../../middlewares/auth.middleware";
+import upload from "../../../config/multer";
 
 const router: Router = Router();
 
@@ -27,6 +28,13 @@ router.delete(
   "/deleteOne/:id",
   authMiddleware.isAuthorized,
   productController.deleteOneProduct,
+);
+
+router.post(
+  "/import",
+  authMiddleware.isAuthorized,
+  upload.single("file"),
+  productController.importProducts,
 );
 
 export const productsRoute: Router = router;

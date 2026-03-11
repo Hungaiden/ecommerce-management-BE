@@ -1,5 +1,6 @@
 import type { Request, Response } from "express";
 import * as productService from "../../../services/admin/products/product.service";
+import { importProductsFromBuffer } from "../../../services/admin/products/importProduct.service";
 import type * as paramsTypes from "../../../utils/types/paramsTypes";
 import type {
   ResponseDetailSuccess,
@@ -264,6 +265,35 @@ export const getProductsByCategory = async (req: Request, res: Response) => {
       timestamp: new Date().toISOString(),
       path: req.path,
       message: error.message,
+      errors: [],
+    };
+    res.status(500).json(response);
+  }
+};
+
+export const importProducts = async (req: Request, res: Response) => {
+  try {
+    if (!req.file) {
+      res.status(400).json({
+        code: 400,
+        message: "Vui lòng upload file Excel (.xlsx hoặc .xls)",
+      });
+      return;
+    }
+
+    const result = await importProductsFromBuffer(req.file.buffer);
+
+    res.status(200).json({
+      code: 200,
+      message: `Import hoàn tất: ${result.success} thành công, ${result.failed} thất bại`,
+      data: result,
+    });
+  } catch (error: any) {
+    const response: ResponseFailure = {
+      code: 500,
+      timestamp: new Date().toISOString(),
+      path: req.path,
+      message: error.message ?? "Lỗi khi import sản phẩm",
       errors: [],
     };
     res.status(500).json(response);
