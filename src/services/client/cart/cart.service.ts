@@ -4,7 +4,7 @@ import Product from "../../../models/products/product.model";
 // Lấy giỏ hàng của người dùng
 export const getCart = async (userId: string) => {
   const cart = await Cart.findOne({ user_id: userId })
-    .populate("items.product_id", "title price thumbnail stock status")
+    .populate("items.product_id", "name price thumbnail stock status")
     .lean();
 
   if (!cart) {
@@ -56,7 +56,7 @@ export const addToCart = async (
   await cart.save();
 
   return await Cart.findById(cart._id)
-    .populate("items.product_id", "title price thumbnail stock status")
+    .populate("items.product_id", "name price thumbnail stock status")
     .lean();
 };
 
@@ -86,7 +86,7 @@ export const updateCartItem = async (
   await cart.save();
 
   return await Cart.findById(cart._id)
-    .populate("items.product_id", "title price thumbnail stock status")
+    .populate("items.product_id", "name price thumbnail stock status")
     .lean();
 };
 
@@ -107,7 +107,7 @@ export const removeCartItem = async (userId: string, itemId: string) => {
   await cart.save();
 
   return await Cart.findById(cart._id)
-    .populate("items.product_id", "title price thumbnail stock status")
+    .populate("items.product_id", "name price thumbnail stock status")
     .lean();
 };
 
