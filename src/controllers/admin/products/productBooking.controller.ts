@@ -121,6 +121,33 @@ export const getProductBookingsByUserId = async (
   res: Response,
 ) => {
   try {
+    const requesterId = req.jwtDecoded?.userId as string | undefined;
+    const requesterRole = req.jwtDecoded?.role as string | undefined;
+
+    if (!requesterId) {
+      const response: ResponseFailure = {
+        code: 401,
+        timestamp: new Date().toISOString(),
+        path: req.path,
+        message: "Unauthorized",
+        errors: [],
+      };
+      res.status(401).json(response);
+      return;
+    }
+
+    if (requesterRole !== "admin" && requesterId !== req.params.userId) {
+      const response: ResponseFailure = {
+        code: 403,
+        timestamp: new Date().toISOString(),
+        path: req.path,
+        message: "Bạn không có quyền xem đơn hàng của người dùng khác",
+        errors: [],
+      };
+      res.status(403).json(response);
+      return;
+    }
+
     const sortParams: paramsTypes.SortParams = {
       sortBy: req.query.sortBy as string,
       sortType: req.query.sortType as paramsTypes.SORT_TYPE,

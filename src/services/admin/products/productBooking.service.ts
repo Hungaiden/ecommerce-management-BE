@@ -5,6 +5,10 @@ import type { UpdateProductBookingDto } from "../../../dto/products/update.produ
 import * as paramsTypes from "../../../utils/types/paramsTypes";
 
 export const createProductBooking = async (data: CreateProductBookingDto) => {
+  if (!data.user_id) {
+    throw new Error("Vui lòng đăng nhập để đặt hàng");
+  }
+
   // Validate tồn kho cho từng sản phẩm
   for (const item of data.items) {
     const product = await Product.findById(item.product_id);

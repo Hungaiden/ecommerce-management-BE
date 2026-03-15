@@ -24,19 +24,38 @@ export const createPaymentUrl = async (req: Request, res: Response) => {
     if (!booking) {
       throw new Error("Booking not found");
     }
+
     const tmnCode = process.env.VNP_TMN_CODE;
     const secretKey = process.env.VNP_HASH_SECRET;
+    const returnUrl =
+      process.env.VNP_RETURN_URL ||
+      "http://localhost:3000/payment/vnpay-return";
+    const configuredVnpUrl =
+      process.env.VNP_URL ||
+      "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
+
+    if (!tmnCode || !secretKey) {
+      res.status(500).json({
+        message: "Missing VNPay configuration (VNP_TMN_CODE/VNP_HASH_SECRET)",
+      });
+      return;
+    }
+
+    const parsedVnpUrl = new URL(configuredVnpUrl);
+    const paymentEndpoint =
+      parsedVnpUrl.pathname.replace(/^\/+/, "") || "paymentv2/vpcpay.html";
     const orderInfo = `Thanh toan booking ${bookingId}`;
+
     const vnpay = new VNPay({
       tmnCode: tmnCode,
       secureSecret: secretKey,
-      vnpayHost: "https://sandbox.vnpayment.vn",
+      vnpayHost: parsedVnpUrl.origin,
       testMode: true,
       hashAlgorithm: HashAlgorithm.SHA512,
       enableLog: true,
       loggerFn: ignoreLogger,
       endpoints: {
-        paymentEndpoint: "paymentv2/vpcpay.html", // Endpoint thanh toán
+        paymentEndpoint, // Endpoint thanh toán
         queryDrRefundEndpoint: "merchant_webapi/api/transaction", // Endpoint tra cứu & hoàn tiền
         getBankListEndpoint: "qrpayauth/api/merchant/get_bank_list", // Endpoint lấy danh sách ngân hàng
       },
@@ -48,7 +67,7 @@ export const createPaymentUrl = async (req: Request, res: Response) => {
       vnp_TxnRef: bookingId,
       vnp_OrderInfo: orderInfo,
       vnp_OrderType: ProductCode.Other,
-      vnp_ReturnUrl: "http://localhost:3000/payment/vnpay-return",
+      vnp_ReturnUrl: returnUrl,
       vnp_Locale: VnpLocale.VN, // 'vn' hoặc 'en'
       vnp_CreateDate: dateFormat(new Date()),
       vnp_ExpireDate: dateFormat(new Date(Date.now() + 30 * 60 * 1000)),
@@ -69,7 +88,6 @@ export const vnpayReturn = async (req: Request, res: Response) => {
     delete vnp_Params["vnp_SecureHashType"];
 
     const secretKey = process.env.VNP_HASH_SECRET;
-    console.log("secretKey", secretKey);
     if (!secretKey) {
       res.status(500).json({ message: "Missing VNP_HASH_SECRET" });
       return;

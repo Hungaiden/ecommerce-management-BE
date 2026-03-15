@@ -5,7 +5,11 @@ const router: Router = Router();
 
 import * as productBookingController from "../../../controllers/admin/products/productBooking.controller";
 
-router.post("/create", productBookingController.createProductBooking);
+router.post(
+  "/create",
+  authMiddleware.isAuthorized,
+  productBookingController.createProductBooking,
+);
 
 router.get(
   "/getAll",
@@ -20,6 +24,7 @@ router.get(
 
 router.get(
   "/user/:userId",
+  authMiddleware.isAuthorized,
   productBookingController.getProductBookingsByUserId,
 );
 
