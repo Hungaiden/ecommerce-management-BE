@@ -1,23 +1,97 @@
 /* eslint-disable no-undef */
-import nodemailer from 'nodemailer'
-import type { BaseBooking } from '../utils/types/bookingTypes'
+import nodemailer from "nodemailer";
+import type { BaseBooking } from "../utils/types/bookingTypes";
 
-export const sendBookingEmail = async ({ userEmail, bookingType, data }: BaseBooking) => {
-  const transporter = nodemailer.createTransport({
-    service: 'gmail',
+type NewsletterPayload = {
+  emails: string[];
+  subject: string;
+  title: string;
+  content: string;
+};
+
+const NEWSLETTER_BATCH_SIZE = 50;
+
+const normalizeEnvValue = (value?: string) => {
+  return String(value || "")
+    .trim()
+    .replace(/^"|"$/g, "");
+};
+
+const normalizeAppPassword = (value?: string) => {
+  // Gmail app password is 16 chars; users often copy with spaces every 4 chars.
+  return normalizeEnvValue(value).replace(/\s+/g, "");
+};
+
+const mapMailError = (error: any) => {
+  const message = String(error?.message || "");
+  const isInvalidCredential =
+    error?.responseCode === 535 ||
+    /Invalid login|BadCredentials/i.test(message);
+
+  if (isInvalidCredential) {
+    return new Error(
+      "Đăng nhập SMTP thất bại: kiểm tra EMAIL_USER và EMAIL_PASS (Gmail App Password 16 ký tự, không chứa khoảng trắng)." +
+        " Nếu vừa đổi mật khẩu/app-password, hãy khởi động lại backend.",
+    );
+  }
+
+  return error instanceof Error ? error : new Error("Gửi email thất bại");
+};
+
+const createTransporter = () => {
+  const emailUser = normalizeEnvValue(process.env.EMAIL_USER);
+  const emailPass = normalizeAppPassword(process.env.EMAIL_PASS);
+
+  if (!emailUser || !emailPass) {
+    throw new Error(
+      "Thiếu cấu hình EMAIL_USER hoặc EMAIL_PASS trong môi trường backend",
+    );
+  }
+
+  return nodemailer.createTransport({
+    service: "gmail",
     auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS,
+      user: emailUser,
+      pass: emailPass,
     },
-  })
+  });
+};
 
-  let subject = ''
-  let htmlContent = ''
+const chunkList = (values: string[], batchSize: number): string[][] => {
+  if (batchSize <= 0) return [values];
 
-  if (bookingType === 'tour') {
-    subject = '🎉 Xác nhận đặt tour thành công'
+  const chunks: string[][] = [];
+  for (let index = 0; index < values.length; index += batchSize) {
+    chunks.push(values.slice(index, index + batchSize));
+  }
+  return chunks;
+};
 
-    htmlContent = `
+const toHtmlContent = (value: string) => {
+  const trimmed = (value || "").trim();
+  if (!trimmed) return "<p>(Không có nội dung)</p>";
+
+  const looksLikeHtml = /<\/?[a-z][\s\S]*>/i.test(trimmed);
+  if (looksLikeHtml) return trimmed;
+
+  return trimmed.replace(/\n/g, "<br/>");
+};
+
+export const sendBookingEmail = async ({
+  userEmail,
+  bookingType,
+  data,
+}: BaseBooking) => {
+  try {
+    const transporter = createTransporter();
+
+    let subject = "";
+    let htmlContent = "";
+
+    if (bookingType === "tour") {
+      subject = "🎉 Xác nhận đặt tour thành công";
+
+      htmlContent = `
       <div style="font-family: Arial, sans-serif; padding: 20px; background-color: #f4f4f4;">
         <div style="max-width: 600px; margin: auto; background: #ffffff; padding: 30px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
           <h2 style="color: #2c3e50;">✅ Bạn đã đặt tour thành công!</h2>
@@ -33,7 +107,7 @@ export const sendBookingEmail = async ({ userEmail, bookingType, data }: BaseBoo
             </tr>
             <tr>
               <td style="padding: 8px; font-weight: bold;">📅 Ngày khởi hành:</td>
-              <td style="padding: 8px;">${new Date(data.start_date).toLocaleDateString('vi-VN')}</td>
+              <td style="padding: 8px;">${new Date(data.start_date).toLocaleDateString("vi-VN")}</td>
             </tr>
             <tr>
               <td style="padding: 8px; font-weight: bold;">👥 Số người:</td>
@@ -41,7 +115,7 @@ export const sendBookingEmail = async ({ userEmail, bookingType, data }: BaseBoo
             </tr>
             <tr>
               <td style="padding: 8px; font-weight: bold;">💰 Tổng tiền:</td>
-              <td style="padding: 8px; color: #e74c3c;"><strong>${data.total_price.toLocaleString('vi-VN')} VNĐ</strong></td>
+              <td style="padding: 8px; color: #e74c3c;"><strong>${data.total_price.toLocaleString("vi-VN")} VNĐ</strong></td>
             </tr>
           </table>
 
@@ -60,13 +134,65 @@ export const sendBookingEmail = async ({ userEmail, bookingType, data }: BaseBoo
           </p>
         </div>
       </div>
-    `
-  }
+    `;
+    }
 
-  await transporter.sendMail({
-    from: `"TourBooking" <${process.env.EMAIL_USER}>`,
-    to: userEmail,
-    subject,
-    html: htmlContent,
-  })
-}
+    await transporter.sendMail({
+      from: `"TourBooking" <${normalizeEnvValue(process.env.EMAIL_USER)}>`,
+      to: userEmail,
+      subject,
+      html: htmlContent,
+    });
+  } catch (error: any) {
+    throw mapMailError(error);
+  }
+};
+
+export const sendNewsletterCampaignEmails = async ({
+  emails,
+  subject,
+  title,
+  content,
+}: NewsletterPayload) => {
+  try {
+    const validEmails = (emails || [])
+      .map((email) => String(email || "").trim())
+      .filter(Boolean);
+
+    if (validEmails.length === 0) {
+      return 0;
+    }
+
+    const transporter = createTransporter();
+    const contentHtml = toHtmlContent(content);
+    const html = `
+    <div style="font-family: Arial, sans-serif; padding: 24px; background-color: #f6f7fb;">
+      <div style="max-width: 640px; margin: 0 auto; background: #ffffff; border-radius: 10px; padding: 28px; border: 1px solid #eceff5;">
+        <h2 style="margin: 0 0 12px; color: #111827;">${title}</h2>
+        <div style="font-size: 15px; line-height: 1.7; color: #374151;">${contentHtml}</div>
+        <hr style="margin: 24px 0; border: none; border-top: 1px solid #e5e7eb;" />
+        <p style="font-size: 12px; color: #9ca3af; margin: 0;">
+          Bạn nhận email này vì đã đăng ký bản tin ưu đãi của TrendVibe.
+        </p>
+      </div>
+    </div>
+  `;
+
+    const emailBatches = chunkList(validEmails, NEWSLETTER_BATCH_SIZE);
+    const fromEmail = normalizeEnvValue(process.env.EMAIL_USER);
+
+    for (const batch of emailBatches) {
+      await transporter.sendMail({
+        from: `"TrendVibe" <${fromEmail}>`,
+        to: fromEmail,
+        bcc: batch.join(", "),
+        subject,
+        html,
+      });
+    }
+
+    return validEmails.length;
+  } catch (error: any) {
+    throw mapMailError(error);
+  }
+};

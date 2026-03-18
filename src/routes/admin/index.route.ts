@@ -17,6 +17,8 @@ import { productCategoryRoute } from "./products/productCategory.route";
 import { adminCartRoute } from "./cart/adminCart.route";
 import { productBookingRoute } from "./products/productBooking.route";
 import { productReviewRoute } from "./products/productReview.route";
+import { newsletterRoute } from "./marketing/newsletter.route";
+import { subscribeRoute } from "../client/newsletter/subscribe.route";
 
 const adminRoutes = (app: Express) => {
   // route account
@@ -59,6 +61,12 @@ const adminRoutes = (app: Express) => {
 
   // route product review
   app.use("/products/reviews", productReviewRoute);
+
+  // route newsletter (admin)
+  app.use("/newsletter", newsletterRoute);
+
+  // route subscribe (public)
+  app.use("/subscribe", subscribeRoute);
 };
 
 export default adminRoutes;
