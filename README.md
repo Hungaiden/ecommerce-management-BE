@@ -92,8 +92,9 @@ CLOUD_SECRET=your_cloud_secret
 EMAIL_USER=your_email@gmail.com
 EMAIL_PASS=your_gmail_app_password
 
-# Google Gemini AI (tuỳ chọn)
-API_GEMINI_KEY=your_gemini_api_key
+# Groq AI (tuỳ chọn)
+GROQ_API_KEY=your_groq_api_key
+GROQ_MODEL=llama-3.3-70b-versatile
 
 # VNPay (Sandbox)
 VNP_TMN_CODE=your_tmn_code

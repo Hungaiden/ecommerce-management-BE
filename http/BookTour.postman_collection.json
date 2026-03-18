@@ -256,7 +256,7 @@
       ]
     },
     {
-      "name": "Gemini AI (Tour Planner)",
+      "name": "Groq AI (Tour Planner)",
       "item": [
         {
           "name": "Generate Tour Plan",
@@ -264,9 +264,9 @@
             "method": "POST",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
             "url": {
-              "raw": "{{baseUrl}}/gemini/generate",
+              "raw": "{{baseUrl}}/groq/generate",
               "host": ["{{baseUrl}}"],
-              "path": ["gemini", "generate"]
+              "path": ["groq", "generate"]
             },
             "body": {
               "mode": "raw",

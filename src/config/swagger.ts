@@ -150,7 +150,7 @@ export const swaggerDocument = {
           address: { type: "string", example: "123 Cầu Giấy, Hà Nội" },
         },
       },
-      GeminiRecommend: {
+      GroqRecommend: {
         type: "object",
         properties: {
           keyword: { type: "string", example: "áo thun trắng" },
@@ -857,16 +857,16 @@ export const swaggerDocument = {
       },
     },
 
-    // ─────────────── GEMINI ───────────────
-    "/gemini/recommend-product": {
+    // ─────────────── GROQ ───────────────
+    "/groq/recommend-product": {
       post: {
-        tags: ["Gemini AI"],
-        summary: "Gợi ý sản phẩm bằng AI (Gemini)",
+        tags: ["Groq AI"],
+        summary: "Gợi ý sản phẩm bằng AI (Groq)",
         requestBody: {
           required: true,
           content: {
             "application/json": {
-              schema: { $ref: "#/components/schemas/GeminiRecommend" },
+              schema: { $ref: "#/components/schemas/GroqRecommend" },
             },
           },
         },

@@ -7,7 +7,7 @@ import { dashboardRoute } from "./dashboard/dashboard.route";
 import { systemSettingsRoute } from "./settings/systemSetting.route";
 import uploadRoute from "./upload.route";
 
-import { GeminiRoute } from "../client/chatbot/gemini.route";
+import { GroqRoute } from "../client/chatbot/groq.route";
 import { VNPayRoute } from "../client/payment/vnpay.route";
 import { cartRoute } from "../client/cart/cart.route";
 
@@ -27,8 +27,8 @@ const adminRoutes = (app: Express) => {
   // route upload
   app.use("/upload", uploadRoute);
 
-  // route gemini
-  app.use("/gemini", GeminiRoute);
+  // route groq
+  app.use("/groq", GroqRoute);
 
   // route payment
   app.use("/payment", VNPayRoute);

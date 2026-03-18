@@ -66,11 +66,11 @@ Authorization: Bearer {{token}}
 # Authorization: Bearer {{token}}
 
 ### ==========================================
-###         GEMINI AI (Tour Planner)
+###         GROQ AI (Tour Planner)
 ### ==========================================
 
-### Generate Tour Plan with Gemini
-POST {{baseUrl}}/gemini/generate
+### Generate Tour Plan with Groq
+POST {{baseUrl}}/groq/generate
 Content-Type: {{contentType}}
 
 {
