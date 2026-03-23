@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
 const subscriberSchema = new mongoose.Schema(
   {
@@ -19,10 +19,4 @@ const subscriberSchema = new mongoose.Schema(
   },
 );
 
-subscriberSchema.index({ email: 1 }, { unique: true });
-
-export const Subscriber = mongoose.model(
-  "Subscriber",
-  subscriberSchema,
-  "subscribers",
-);
+export const Subscriber = mongoose.model('Subscriber', subscriberSchema, 'subscribers');

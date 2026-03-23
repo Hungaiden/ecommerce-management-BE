@@ -1,42 +1,43 @@
-import { Router } from "express";
-import { authMiddleware } from "../../../middlewares/auth.middleware";
+import { Router } from 'express';
+import { authMiddleware } from '../../../middlewares/auth.middleware';
 
 const router: Router = Router();
 
-import * as productBookingController from "../../../controllers/admin/products/productBooking.controller";
+import * as productBookingController from '../../../controllers/admin/products/productBooking.controller';
 
-router.post(
-  "/create",
-  authMiddleware.isAuthorized,
-  productBookingController.createProductBooking,
-);
+router.post('/create', authMiddleware.isAuthorized, productBookingController.createProductBooking);
 
 router.get(
-  "/getAll",
+  '/getAll',
   authMiddleware.isAuthorized,
+  authMiddleware.hasRoles('admin'),
   productBookingController.getAllProductBookings,
 );
 
 router.get(
-  "/detail/:bookingId",
+  '/detail/:bookingId',
+  authMiddleware.isAuthorized,
+  authMiddleware.hasRoles('admin'),
   productBookingController.getProductBookingById,
 );
 
 router.get(
-  "/user/:userId",
+  '/user/:userId',
   authMiddleware.isAuthorized,
   productBookingController.getProductBookingsByUserId,
 );
 
 router.patch(
-  "/update/:bookingId",
+  '/update/:bookingId',
   authMiddleware.isAuthorized,
+  authMiddleware.hasRoles('admin'),
   productBookingController.updateProductBooking,
 );
 
 router.delete(
-  "/delete/:bookingId",
+  '/delete/:bookingId',
   authMiddleware.isAuthorized,
+  authMiddleware.hasRoles('admin'),
   productBookingController.deleteProductBooking,
 );
 

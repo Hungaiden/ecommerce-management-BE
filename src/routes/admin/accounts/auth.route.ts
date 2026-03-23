@@ -1,17 +1,15 @@
-import { Router } from 'express'
-import { authMiddleware } from '../../../middlewares/auth.middleware'
-const router: Router = Router()
+import { Router } from 'express';
+import { authMiddleware } from '../../../middlewares/auth.middleware';
+const router: Router = Router();
 
-import * as authController from '../../../controllers/admin/accounts/auth.controller'
+import * as authController from '../../../controllers/admin/accounts/auth.controller';
 
-router.post('/login', authController.login)
+router.post('/login', authController.login);
 
-router.post(
-  '/logout', 
-  authController.logout)
+router.post('/admin/login', authController.adminLogin);
 
-router.patch(
-  '/refresh-token',
-  authController.refreshToken)
+router.post('/logout', authController.logout);
 
-export const authsRoute: Router = router
+router.patch('/refresh-token', authController.refreshToken);
+
+export const authsRoute: Router = router;

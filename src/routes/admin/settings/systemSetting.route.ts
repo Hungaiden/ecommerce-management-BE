@@ -1,17 +1,20 @@
-import express from "express";
-import { Router } from 'express'
+import express from 'express';
+import { Router } from 'express';
 import {
   createSystemSetting,
   getSystemSetting,
   updateSystemSetting,
-} from "../../../controllers/systemSetting.controller";
+} from '../../../controllers/systemSetting.controller';
+import { authMiddleware } from '../../../middlewares/auth.middleware';
 
 const router = express.Router();
 
-router.post("/", createSystemSetting);
+router.use(authMiddleware.isAuthorized, authMiddleware.hasRoles('admin'));
 
-router.get("/", getSystemSetting);
+router.post('/', createSystemSetting);
 
-router.patch("/", updateSystemSetting);
+router.get('/', getSystemSetting);
 
-export const systemSettingsRoute: Router = router
+router.patch('/', updateSystemSetting);
+
+export const systemSettingsRoute: Router = router;

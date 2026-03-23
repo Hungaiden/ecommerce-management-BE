@@ -1,39 +1,43 @@
-import { Router } from "express";
-import { authMiddleware } from "../../../middlewares/auth.middleware";
-import upload from "../../../config/multer";
+import { Router } from 'express';
+import { authMiddleware } from '../../../middlewares/auth.middleware';
+import upload from '../../../config/multer';
 
 const router: Router = Router();
 
-import * as productController from "../../../controllers/admin/products/product.controller";
+import * as productController from '../../../controllers/admin/products/product.controller';
 
-router.get("/", productController.getAllProducts);
+router.get('/', productController.getAllProducts);
 
 router.post(
-  "/create",
+  '/create',
   authMiddleware.isAuthorized,
+  authMiddleware.hasRoles('admin'),
   productController.createProduct,
 );
 
-router.get("/detail/:id", productController.getProductById);
+router.get('/detail/:id', productController.getProductById);
 
-router.get("/category/:category", productController.getProductsByCategory);
+router.get('/category/:category', productController.getProductsByCategory);
 
 router.patch(
-  "/update/:id",
+  '/update/:id',
   authMiddleware.isAuthorized,
+  authMiddleware.hasRoles('admin'),
   productController.updateProduct,
 );
 
 router.delete(
-  "/deleteOne/:id",
+  '/deleteOne/:id',
   authMiddleware.isAuthorized,
+  authMiddleware.hasRoles('admin'),
   productController.deleteOneProduct,
 );
 
 router.post(
-  "/import",
+  '/import',
   authMiddleware.isAuthorized,
-  upload.single("file"),
+  authMiddleware.hasRoles('admin'),
+  upload.single('file'),
   productController.importProducts,
 );
 
