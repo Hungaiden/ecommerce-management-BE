@@ -1,17 +1,17 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
 const productBookingSchema = new mongoose.Schema(
   {
     user_id: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Account",
+      ref: 'Account',
       required: true,
     },
     items: [
       {
         product_id: {
           type: mongoose.Schema.Types.ObjectId,
-          ref: "Product",
+          ref: 'Product',
           required: true,
         },
         name: {
@@ -20,7 +20,7 @@ const productBookingSchema = new mongoose.Schema(
         },
         thumbnail: {
           type: String,
-          default: "",
+          default: '',
         },
         price: {
           type: Number,
@@ -33,11 +33,11 @@ const productBookingSchema = new mongoose.Schema(
         },
         size: {
           type: String,
-          default: "",
+          default: '',
         },
         color: {
           type: String,
-          default: "",
+          default: '',
         },
         quantity: {
           type: Number,
@@ -57,12 +57,12 @@ const productBookingSchema = new mongoose.Schema(
       name: { type: String, required: true },
       phone: { type: String, required: true },
       email: { type: String, required: true },
-      address: { type: String, default: "" },
+      address: { type: String, default: '' },
     },
 
     note: {
       type: String,
-      default: "",
+      default: '',
     },
 
     total_price: {
@@ -71,24 +71,41 @@ const productBookingSchema = new mongoose.Schema(
       min: 0,
     },
 
+    discount_id: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Discount',
+      default: null,
+    },
+
+    discount_code: {
+      type: String,
+      default: '',
+    },
+
+    discount_amount: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
+
     // Trạng thái đơn hàng
     status: {
       type: String,
-      enum: ["pending", "confirmed", "shipping", "delivered", "cancelled"],
-      default: "pending",
+      enum: ['pending', 'confirmed', 'shipping', 'delivered', 'cancelled'],
+      default: 'pending',
     },
 
     // Trạng thái thanh toán
     payment_status: {
       type: String,
-      enum: ["pending", "paid", "failed", "refunded"],
-      default: "pending",
+      enum: ['pending', 'paid', 'failed', 'refunded'],
+      default: 'pending',
     },
 
     payment_method: {
       type: String,
-      enum: ["vnpay", "momo", "cash", "bank_transfer"],
-      default: "vnpay",
+      enum: ['vnpay', 'momo', 'cash', 'bank_transfer'],
+      default: 'vnpay',
     },
 
     transaction_code: {
@@ -118,14 +135,14 @@ const productBookingSchema = new mongoose.Schema(
   },
   {
     timestamps: {
-      createdAt: "created_at",
-      updatedAt: "updated_at",
+      createdAt: 'created_at',
+      updatedAt: 'updated_at',
     },
   },
 );
 
 export const ProductBooking = mongoose.model(
-  "ProductBooking",
+  'ProductBooking',
   productBookingSchema,
-  "product_bookings",
+  'product_bookings',
 );

@@ -1,4 +1,41 @@
-import { Cart } from "../../../models/products/productCart.model";
+import { Cart } from '../../../models/products/productCart.model';
+import { Account } from '../../../models/accounts/account.model';
+
+const USER_SELECT = 'fullName email avatar';
+
+const attachUserInfo = async <T extends { user_id?: any }>(carts: T[]) => {
+  const userIds = Array.from(
+    new Set(
+      carts
+        .map((cart) => cart.user_id)
+        .filter((id) => !!id)
+        .map((id) => id.toString()),
+    ),
+  );
+
+  if (userIds.length === 0) {
+    return carts.map((cart) => ({ ...cart, user_id: cart.user_id ?? null }));
+  }
+
+  const users = await Account.find({ _id: { $in: userIds } })
+    .select(USER_SELECT)
+    .lean();
+
+  const userMap = new Map(users.map((u: any) => [u._id.toString(), u]));
+
+  return carts.map((cart) => {
+    const rawUserId = cart.user_id?.toString?.() || '';
+    if (!rawUserId) {
+      return { ...cart, user_id: null };
+    }
+
+    const user = userMap.get(rawUserId);
+    return {
+      ...cart,
+      user_id: user || rawUserId,
+    };
+  });
+};
 
 // Lấy tất cả giỏ hàng (có phân trang + tìm kiếm)
 export const getAllCarts = async (params: {
@@ -8,11 +45,12 @@ export const getAllCarts = async (params: {
 }) => {
   const { offset = 0, limit = 10, keyword } = params;
 
-  // Lấy tất cả carts và populate user + product
-  const allCarts = await Cart.find()
-    .populate("user_id", "fullName email avatar")
-    .populate("items.product_id", "name price discount thumbnail")
+  // Lấy tất cả carts và populate product
+  const allCartsRaw = await Cart.find()
+    .populate('items.product_id', 'name price discount thumbnail')
     .lean();
+
+  const allCarts = await attachUserInfo(allCartsRaw as any[]);
 
   // Lọc theo keyword (email hoặc fullName)
   let filtered = allCarts;
@@ -20,11 +58,8 @@ export const getAllCarts = async (params: {
     const kw = keyword.toLowerCase();
     filtered = allCarts.filter((cart: any) => {
       const user = cart.user_id as any;
-      if (!user) return false;
-      return (
-        user.email?.toLowerCase().includes(kw) ||
-        user.fullName?.toLowerCase().includes(kw)
-      );
+      if (!user || typeof user !== 'object') return false;
+      return user.email?.toLowerCase().includes(kw) || user.fullName?.toLowerCase().includes(kw);
     });
   }
 
@@ -39,27 +74,23 @@ export const getAllCarts = async (params: {
 // Lấy giỏ hàng của 1 user cụ thể
 export const getCartByUserId = async (userId: string) => {
   const cart = await Cart.findOne({ user_id: userId })
-    .populate("user_id", "fullName email avatar")
-    .populate("items.product_id", "name price discount thumbnail sizes colors")
+    .populate('items.product_id', 'name price discount thumbnail sizes colors')
     .lean();
 
   if (!cart) {
     return { user_id: userId, items: [] };
   }
 
-  return cart;
+  const [normalized] = await attachUserInfo([cart as any]);
+  return normalized;
 };
 
 // Xoá toàn bộ giỏ hàng của 1 user
 export const clearCartByUserId = async (userId: string) => {
-  const cart = await Cart.findOneAndUpdate(
-    { user_id: userId },
-    { items: [] },
-    { new: true },
-  );
+  const cart = await Cart.findOneAndUpdate({ user_id: userId }, { items: [] }, { new: true });
 
   if (!cart) {
-    throw new Error("Giỏ hàng không tồn tại!");
+    throw new Error('Giỏ hàng không tồn tại!');
   }
 
   return cart;
@@ -69,20 +100,26 @@ export const clearCartByUserId = async (userId: string) => {
 export const removeItemFromCart = async (userId: string, itemId: string) => {
   const cart = await Cart.findOne({ user_id: userId });
   if (!cart) {
-    throw new Error("Giỏ hàng không tồn tại!");
+    throw new Error('Giỏ hàng không tồn tại!');
   }
 
   const initialLength = cart.items.length;
   cart.items.pull({ _id: itemId });
 
   if (cart.items.length === initialLength) {
-    throw new Error("Sản phẩm không tồn tại trong giỏ hàng!");
+    throw new Error('Sản phẩm không tồn tại trong giỏ hàng!');
   }
 
   await cart.save();
 
-  return await Cart.findById(cart._id)
-    .populate("user_id", "fullName email avatar")
-    .populate("items.product_id", "name price discount thumbnail sizes colors")
+  const updated = await Cart.findById(cart._id)
+    .populate('items.product_id', 'name price discount thumbnail sizes colors')
     .lean();
+
+  if (!updated) {
+    throw new Error('Giỏ hàng không tồn tại!');
+  }
+
+  const [normalized] = await attachUserInfo([updated as any]);
+  return normalized;
 };

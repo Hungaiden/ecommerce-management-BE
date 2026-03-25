@@ -6,6 +6,8 @@ const router: Router = Router();
 
 import * as accountController from '../../../controllers/admin/accounts/account.controller';
 
+router.post('/register', accountController.registerAccount);
+
 router.use(authMiddleware.isAuthorized, authMiddleware.hasRoles('admin'));
 
 router.get('/', accountController.getAllAccounts);

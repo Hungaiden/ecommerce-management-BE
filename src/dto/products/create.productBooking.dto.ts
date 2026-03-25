@@ -21,5 +21,8 @@ export interface CreateProductBookingDto {
   };
   note?: string;
   total_price?: number;
-  payment_method?: "vnpay" | "momo" | "cash" | "bank_transfer";
+  discount_id?: string;
+  discount_code?: string;
+  discount_amount?: number;
+  payment_method?: 'vnpay' | 'momo' | 'cash' | 'bank_transfer';
 }

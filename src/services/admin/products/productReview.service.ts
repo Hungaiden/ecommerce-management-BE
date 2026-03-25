@@ -1,8 +1,8 @@
-import mongoose from "mongoose";
-import { ProductReview } from "../../../models/products/productReview.model";
-import Product from "../../../models/products/product.model";
-import type { CreateProductReviewDto } from "../../../dto/products/create.productReview.dto";
-import * as paramsTypes from "../../../utils/types/paramsTypes";
+import mongoose from 'mongoose';
+import { ProductReview } from '../../../models/products/productReview.model';
+import Product from '../../../models/products/product.model';
+import type { CreateProductReviewDto } from '../../../dto/products/create.productReview.dto';
+import * as paramsTypes from '../../../utils/types/paramsTypes';
 
 const recalculateProductRating = async (productId: string) => {
   const result = await ProductReview.aggregate([
@@ -15,8 +15,8 @@ const recalculateProductRating = async (productId: string) => {
     },
     {
       $group: {
-        _id: "$product_id",
-        averageRating: { $avg: "$rating" },
+        _id: '$product_id',
+        averageRating: { $avg: '$rating' },
         reviewCount: { $sum: 1 },
       },
     },
@@ -37,10 +37,7 @@ export const createProductReview = async (data: CreateProductReviewDto) => {
   return newReview;
 };
 
-export const updateProductReview = async (
-  id: string,
-  data: Partial<CreateProductReviewDto>,
-) => {
+export const updateProductReview = async (id: string, data: Partial<CreateProductReviewDto>) => {
   const review = await ProductReview.findByIdAndUpdate(id, data, { new: true });
   if (review) {
     await recalculateProductRating(review.product_id.toString());
@@ -49,11 +46,7 @@ export const updateProductReview = async (
 };
 
 export const approveProductReview = async (id: string) => {
-  const review = await ProductReview.findByIdAndUpdate(
-    id,
-    { is_approved: true },
-    { new: true },
-  );
+  const review = await ProductReview.findByIdAndUpdate(id, { is_approved: true }, { new: true });
   if (review) {
     await recalculateProductRating(review.product_id.toString());
   }
@@ -79,7 +72,7 @@ export const getAllProductReviews = async (
 ) => {
   const query: any = { deleted: false };
   if (searchParams?.keyword && searchParams?.field) {
-    query[searchParams.field] = { $regex: searchParams.keyword, $options: "i" };
+    query[searchParams.field] = { $regex: searchParams.keyword, $options: 'i' };
   }
 
   const offset = paginateParams?.offset || 0;
@@ -87,15 +80,14 @@ export const getAllProductReviews = async (
 
   const sortQuery: any = {};
   if (sortParams?.sortBy) {
-    sortQuery[sortParams.sortBy] =
-      sortParams.sortType === paramsTypes.SORT_TYPE.ASC ? 1 : -1;
+    sortQuery[sortParams.sortBy] = sortParams.sortType === paramsTypes.SORT_TYPE.ASC ? 1 : -1;
   } else {
     sortQuery.created_at = -1;
   }
 
   const reviews = await ProductReview.find(query)
-    .populate({ path: "product_id", select: "name sku" })
-    .populate({ path: "user_id", select: "fullName email" })
+    .populate({ path: 'product_id', select: 'name sku' })
+    .populate({ path: 'user_id', select: 'fullName email' })
     .skip(offset)
     .limit(limit)
     .sort(sortQuery)
@@ -111,21 +103,20 @@ export const getProductReviewsByProductId = async (
   sortParams?: paramsTypes.SortParams,
   paginateParams?: paramsTypes.PaginateParams,
 ) => {
-  const query: any = { product_id: productId, deleted: false };
+  const query: any = { product_id: productId, deleted: false, is_approved: true };
 
   const offset = paginateParams?.offset || 0;
   const limit = paginateParams?.limit || 10;
 
   const sortQuery: any = {};
   if (sortParams?.sortBy) {
-    sortQuery[sortParams.sortBy] =
-      sortParams.sortType === paramsTypes.SORT_TYPE.ASC ? 1 : -1;
+    sortQuery[sortParams.sortBy] = sortParams.sortType === paramsTypes.SORT_TYPE.ASC ? 1 : -1;
   } else {
     sortQuery.created_at = -1;
   }
 
   const reviews = await ProductReview.find(query)
-    .populate({ path: "user_id", select: "fullName avatar" })
+    .populate({ path: 'user_id', select: 'fullName avatar' })
     .skip(offset)
     .limit(limit)
     .sort(sortQuery)
@@ -134,4 +125,18 @@ export const getProductReviewsByProductId = async (
   const totalRows = await ProductReview.countDocuments(query);
   const totalPages = Math.ceil(totalRows / limit);
   return { reviews, totalRows, totalPages };
+};
+
+export const getReviewById = async (id: string) => {
+  const review = await ProductReview.findById(id);
+  return review;
+};
+
+export const checkExistingReview = async (productId: string, userId: string) => {
+  const review = await ProductReview.findOne({
+    product_id: new mongoose.Types.ObjectId(productId),
+    user_id: new mongoose.Types.ObjectId(userId),
+    deleted: false,
+  });
+  return review;
 };
