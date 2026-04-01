@@ -19,6 +19,7 @@ import { adminCartRoute } from './cart/adminCart.route';
 import { productBookingRoute } from './products/productBooking.route';
 import { productReviewRoute } from './products/productReview.route';
 import { newsletterRoute } from './marketing/newsletter.route';
+import { bannerRoute } from './marketing/banner.route';
 import { subscribeRoute } from '../client/newsletter/subscribe.route';
 import discountsRoute from './discounts.route';
 
@@ -69,6 +70,9 @@ const adminRoutes = (app: Express) => {
 
   // route newsletter (admin)
   app.use('/newsletter', newsletterRoute);
+
+  // route banner (admin)
+  app.use('/banners', bannerRoute);
 
   // route subscribe (public)
   app.use('/subscribe', subscribeRoute);
